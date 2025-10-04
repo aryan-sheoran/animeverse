@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "seed": "tsx src/scripts/seed.ts"
   },
   "dependencies": {
     "@orpc/client": "^1.9.2",

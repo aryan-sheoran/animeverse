@@ -37,8 +37,8 @@ export default function LoginPage() {
         return;
       }
 
-      // Login successful - redirect to home
-      router.push('/');
+      // Login successful - redirect to hub
+      router.push('/hub');
     } catch (err: any) {
       setError(err.message || 'Network error. Please try again.');
       setIsLoading(false);

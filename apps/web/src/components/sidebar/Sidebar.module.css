@@ -1,0 +1,276 @@
+/* Sidebar.module.css - Exact styling from auth2/home/style.css */
+
+/* Mobile menu toggle */
+.menuIconToggle {
+  display: none;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1001;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.menuIconToggle:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+/* Sidebar Styles - Exact match from auth2 */
+.sidebar {
+  width: 240px;
+  height: 100vh;
+  background: rgba(13, 17, 23, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  z-index: 100;
+  transition: transform 0.3s ease;
+}
+
+.sidebar.active {
+  transform: translateX(0);
+}
+
+.logo {
+  color: #8a2be2;
+  font-size: 28px;
+  font-weight: bold;
+  padding: 20px;
+  text-align: center;
+  letter-spacing: 2px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 20px;
+  text-shadow: 0 0 15px rgba(138, 43, 226, 0.5);
+}
+
+.menu {
+  flex: 1;
+  padding: 0 15px;
+}
+
+.menuTitle {
+  color: rgba(201, 209, 217, 0.8);
+  font-size: 11px;
+  padding: 0 20px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 15px;
+}
+
+.menuItem {
+  text-decoration: none;
+  color: rgba(201, 209, 217, 0.8);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  margin-bottom: 5px;
+  transition: all 0.3s ease;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.menuItem:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #e6edf3;
+}
+
+.menuItem.active {
+  background: linear-gradient(45deg, #dc143c, #ff4d6d);
+  color: white;
+}
+
+.menuIcon {
+  margin-right: 15px;
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+}
+
+.userProfile {
+  position: relative;
+  margin-top: auto;
+  padding: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.avatar {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.statusIndicator {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  background-color: #4ade80;
+  border: 2px solid rgba(13, 17, 23, 0.7);
+  border-radius: 50%;
+}
+
+.userInfo {
+  flex: 1;
+  overflow: hidden;
+}
+
+.userName {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #e6edf3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userStatus {
+  font-size: 0.75rem;
+  color: rgba(201, 209, 217, 0.8);
+  opacity: 0.8;
+}
+
+.avatarSkeleton {
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* User Section */
+.userSection {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Logout Button */
+.logoutBtn {
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  color: #ff6b6b;
+  transition: all 0.3s ease;
+}
+
+.logoutBtn:hover {
+  background-color: rgba(255, 107, 107, 0.1);
+  color: #ff8e8e;
+}
+
+.logoutBtn .menuIcon {
+  color: #ff6b6b;
+}
+
+/* Settings specific styling */
+.menuItem[href="/settings"] .menuIcon {
+  color: #8b5cf6;
+}
+
+.menuItem[href="/settings"]:hover {
+  background-color: rgba(139, 92, 246, 0.1);
+}
+
+.menuItem[href="/settings"].active {
+  background-color: rgba(139, 92, 246, 0.2);
+  color: #8b5cf6;
+  border-left: 3px solid #8b5cf6;
+}
+
+/* Settings icon animation */
+.menuItem[href="/settings"]:hover .menuIcon i {
+  transform: rotate(45deg);
+  transition: transform 0.3s ease;
+}
+
+/* Responsive Design - Exact match from auth2 */
+@media (max-width: 1200px) {
+  .sidebar {
+    width: 220px;
+  }
+}
+
+@media (max-width: 992px) {
+  .menuIconToggle {
+    display: flex;
+  }
+
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+  }
+
+  .userSection {
+    margin-top: 1rem;
+    padding-top: 1rem;
+  }
+
+  .userProfile {
+    padding: 0.75rem;
+  }
+
+  .avatar {
+    width: 35px;
+    height: 35px;
+  }
+
+  .statusIndicator {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .menuIconToggle {
+    top: 15px;
+    left: 15px;
+    width: 45px;
+    height: 45px;
+    font-size: 16px;
+  }
+}

@@ -1,0 +1,199 @@
+/* Glassmorphism Base Styles */
+.reviewRoot {
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  --glass-blur: blur(10px);
+  --gradient-primary: linear-gradient(
+    45deg,
+    rgba(106, 17, 203, 0.4),
+    rgba(37, 117, 252, 0.4)
+  );
+}
+
+.reviewRoot {
+  background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+  color: #e6edf3;
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.reviewRoot::before {
+  content: "";
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(106, 17, 203, 0.1) 0%,
+    rgba(37, 117, 252, 0.1) 100%
+  );
+  animation: rotate 20s linear infinite;
+  z-index: 0;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Glass Orbs */
+.glassOrb {
+  position: fixed;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(106, 17, 203, 0.3),
+    rgba(37, 117, 252, 0.1)
+  );
+  filter: blur(60px);
+  z-index: 0;
+  pointer-events: none;
+  animation: float 10s infinite alternate ease-in-out;
+}
+
+.orb1 {
+  top: 10%;
+  left: 15%;
+}
+
+.orb2 {
+  top: 50%;
+  right: 10%;
+}
+
+.orb3 {
+  bottom: 20%;
+  left: 30%;
+}
+
+@keyframes float {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  100% {
+    transform: translate(30px, 30px) rotate(30deg);
+  }
+}
+
+/* Main Content */
+.mainContent {
+  flex: 1;
+  margin-left: 240px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+  padding: 20px;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Review Header */
+.reviewHeader {
+  margin-bottom: 20px;
+}
+
+/* Two Column Layout */
+.reviewColumns {
+  display: flex;
+  gap: 20px;
+  height: calc(100vh - 120px);
+  overflow: hidden;
+}
+
+.leftColumn {
+  flex: 1;
+  min-width: 0;
+}
+
+.rightColumn {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--glass-bg);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gradient-primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    45deg,
+    rgba(106, 17, 203, 0.8),
+    rgba(37, 117, 252, 0.8)
+  );
+}
+
+/* Responsive Design for Two Column Layout */
+@media (max-width: 1024px) {
+  .reviewColumns {
+    flex-direction: column;
+    height: auto;
+    overflow-y: auto;
+  }
+
+  .leftColumn,
+  .rightColumn {
+    flex: none;
+  }
+
+  .leftColumn {
+    max-height: 60vh;
+  }
+
+  .rightColumn {
+    max-height: none;
+  }
+}
+
+@media (max-width: 992px) {
+  .mainContent {
+    margin-left: 0;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mainContent {
+    padding: 15px;
+  }
+
+  .reviewColumns {
+    gap: 15px;
+  }
+
+  .reviewHeader {
+    margin-bottom: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mainContent {
+    padding: 10px;
+  }
+
+  .reviewColumns {
+    gap: 10px;
+  }
+}

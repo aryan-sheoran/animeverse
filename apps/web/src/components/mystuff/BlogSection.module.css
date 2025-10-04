@@ -1,0 +1,262 @@
+.blogSection {
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.newBlogButton {
+  margin-bottom: 20px;
+}
+
+.newBlogButton:hover {
+  box-shadow: 0 0 15px rgba(37, 117, 252, 0.5);
+  transform: translateY(-2px);
+}
+
+.blogEntry {
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-left: 3px solid #8a2be2;
+  transition: all 0.3s ease;
+}
+
+.blogEntry:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-3px);
+}
+
+.blogTitle {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #e6edf3;
+}
+
+.blogContent {
+  margin-bottom: 10px;
+  color: rgba(201, 209, 217, 0.8);
+  line-height: 1.5;
+}
+
+.blogFooter {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #6c757d;
+  align-items: center;
+}
+
+.blogActions {
+  display: flex;
+  gap: 15px;
+}
+
+.blogAction {
+  margin-left: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.blogAction:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e6edf3;
+}
+
+.blogAction:first-child {
+  margin-left: 0;
+}
+
+.noPosts {
+  text-align: center;
+  padding: 40px 20px;
+  color: rgba(201, 209, 217, 0.6);
+  font-style: italic;
+}
+
+h3 {
+  color: #e6edf3;
+  margin-bottom: 15px;
+  font-size: 20px;
+}
+
+.btn {
+  border: none;
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btnPrimary {
+  background: linear-gradient(
+    45deg,
+    rgba(106, 17, 203, 0.4),
+    rgba(37, 117, 252, 0.4)
+  );
+  color: #e6edf3;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btnPrimary:hover {
+  box-shadow: 0 0 15px rgba(37, 117, 252, 0.5);
+  transform: translateY(-2px);
+}
+
+.glassCard {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.glassCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.45);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .blogSection {
+    padding: 15px;
+  }
+
+  .blogEntry {
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+
+  .blogTitle {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .blogContent {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .blogFooter {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 11px;
+  }
+
+  .blogActions {
+    gap: 10px;
+  }
+
+  .blogAction {
+    margin-left: 0;
+    padding: 3px 6px;
+    font-size: 11px;
+  }
+
+  h3 {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  .btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .blogSection {
+    padding: 12px;
+  }
+
+  .blogEntry {
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+  .blogTitle {
+    font-size: 15px;
+    margin-bottom: 6px;
+  }
+
+  .blogContent {
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+
+  .blogFooter {
+    font-size: 10px;
+  }
+
+  .blogActions {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .blogAction {
+    padding: 2px 5px;
+    font-size: 10px;
+  }
+
+  h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .btn {
+    padding: 6px 10px;
+    font-size: 12px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .newBlogButton {
+    margin-bottom: 15px;
+  }
+
+  .noPosts {
+    padding: 30px 15px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 360px) {
+  .blogSection {
+    padding: 10px;
+  }
+
+  .blogEntry {
+    padding: 8px;
+    margin-bottom: 8px;
+  }
+
+  .blogTitle {
+    font-size: 14px;
+  }
+
+  .blogContent {
+    font-size: 12px;
+  }
+
+  h3 {
+    font-size: 15px;
+  }
+
+  .btn {
+    padding: 5px 8px;
+    font-size: 11px;
+  }
+}

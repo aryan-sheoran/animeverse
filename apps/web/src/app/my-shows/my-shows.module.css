@@ -1,0 +1,300 @@
+/* Glassmorphism Base Styles */
+.myShowsRoot {
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  --glass-blur: blur(10px);
+  --gradient-primary: linear-gradient(
+    45deg,
+    rgba(106, 17, 203, 0.4),
+    rgba(37, 117, 252, 0.4)
+  );
+  --primary-color: #8a2be2;
+  --secondary-color: #2575fc;
+  --text-color: #e6edf3;
+  --text-muted: rgba(201, 209, 217, 0.8);
+  --border-color: rgba(255, 255, 255, 0.1);
+}
+
+.myShowsRoot {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+  color: var(--text-color);
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.myShowsRoot::before {
+  content: "";
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(106, 17, 203, 0.1) 0%,
+    rgba(37, 117, 252, 0.1) 100%
+  );
+  animation: rotate 20s linear infinite;
+  z-index: 0;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Glass Orbs */
+.glassOrb {
+  position: fixed;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  filter: blur(60px);
+  z-index: -1;
+  opacity: 0.6;
+}
+
+/* Main Content Styles */
+.mainContent {
+  flex: 1;
+  margin-left: 240px;
+  padding: 30px;
+  z-index: 1;
+}
+
+.showsSection {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: 10px;
+  padding: 25px;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.sectionHeader h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-color);
+  text-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
+}
+
+.addShowBtn {
+  background: linear-gradient(
+    45deg,
+    var(--primary-color),
+    var(--secondary-color)
+  );
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.addShowBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(138, 43, 226, 0.3);
+}
+
+.filterSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.searchBox {
+  position: relative;
+  flex: 1;
+  min-width: 250px;
+}
+
+.searchBox input {
+  width: 100%;
+  padding: 12px 40px 12px 15px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-color);
+  font-size: 14px;
+}
+
+.searchBox input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.searchBox input::placeholder {
+  color: var(--text-muted);
+}
+
+.searchBox i {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+}
+
+.filterOptions {
+  display: flex;
+  gap: 15px;
+}
+
+.filterSelect,
+.sortSelect {
+  padding: 10px 15px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-color);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.filterSelect option,
+.sortSelect option {
+  background: #0d1117;
+  color: var(--text-color);
+}
+
+.showsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.pageBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pageBtn.active {
+  background: var(--gradient-primary);
+  color: white;
+  border-color: transparent;
+}
+
+.pageBtn:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-color);
+}
+
+/* Loading State */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 18px;
+  color: var(--text-muted);
+}
+
+/* No Shows */
+.noShows {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted);
+}
+
+.noShows i {
+  font-size: 48px;
+  margin-bottom: 20px;
+  color: var(--primary-color);
+  display: block;
+}
+
+.noShows h3 {
+  margin-bottom: 10px;
+  color: var(--text-color);
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .mainContent {
+    margin-left: 0;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sectionHeader {
+    flex-direction: column;
+    gap: 15px;
+    align-items: stretch;
+  }
+
+  .filterSection {
+    flex-direction: column;
+  }
+
+  .filterOptions {
+    flex-direction: column;
+  }
+
+  .showsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+  }
+
+  .mainContent {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .showsGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .showsSection {
+    padding: 15px;
+  }
+}

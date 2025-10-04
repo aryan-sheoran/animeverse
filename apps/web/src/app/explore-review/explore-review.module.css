@@ -1,0 +1,436 @@
+/* Glassmorphism Base Styles */
+.exploreReviewRoot {
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  --glass-blur: blur(10px);
+  --gradient-primary: linear-gradient(
+    45deg,
+    rgba(106, 17, 203, 0.4),
+    rgba(37, 117, 252, 0.4)
+  );
+  --primary-color: #8a2be2;
+  --secondary-color: #2575fc;
+  --text-color: #e6edf3;
+  --text-muted: rgba(201, 209, 217, 0.8);
+  --border-color: rgba(255, 255, 255, 0.1);
+}
+
+.exploreReviewRoot {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+  color: var(--text-color);
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.exploreReviewRoot::before {
+  content: "";
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(106, 17, 203, 0.1) 0%,
+    rgba(37, 117, 252, 0.1) 100%
+  );
+  animation: rotate 20s linear infinite;
+  z-index: 0;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Glass Orbs */
+.glassOrb {
+  position: fixed;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  z-index: 1;
+  animation: float 6s ease-in-out infinite;
+}
+
+.glassOrb:nth-child(2) {
+  animation-delay: -2s;
+}
+
+.glassOrb:nth-child(3) {
+  animation-delay: -4s;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+/* Main Content */
+.mainContent {
+  flex: 1;
+  margin-left: 280px;
+  padding: 40px;
+  z-index: 2;
+  position: relative;
+  min-height: 100vh;
+}
+
+@media (max-width: 992px) {
+  .mainContent {
+    margin-left: 0;
+    padding: 20px;
+  }
+}
+
+/* Header Section */
+.headerSection {
+  text-align: center;
+  margin-bottom: 40px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: var(--glass-shadow);
+}
+
+.pageTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(
+    45deg,
+    var(--primary-color),
+    var(--secondary-color)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.pageTitle i {
+  color: var(--primary-color);
+  -webkit-text-fill-color: var(--primary-color);
+}
+
+.pageSubtitle {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Search Container */
+.searchContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 30px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: var(--glass-shadow);
+}
+
+.searchBar {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.searchBar i {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+.searchBar input {
+  width: 100%;
+  padding: 15px 15px 15px 45px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  color: var(--text-color);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.searchBar input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.2);
+}
+
+.searchBar input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Filter Buttons */
+.filterButtons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filterBtn {
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: 25px;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  font-weight: 500;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.filterBtn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+}
+
+.filterBtn.active {
+  background: var(--gradient-primary);
+  border-color: var(--primary-color);
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+}
+
+/* Results Info */
+.resultsInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding: 15px 20px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  box-shadow: var(--glass-shadow);
+}
+
+.resultsCount {
+  font-weight: 600;
+  color: var(--text-color);
+  font-size: 1rem;
+}
+
+.activeFilter {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  background: rgba(138, 43, 226, 0.2);
+  padding: 5px 12px;
+  border-radius: 15px;
+}
+
+/* Shows Grid */
+.showsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+@media (max-width: 768px) {
+  .showsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .showsGrid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+}
+
+/* Loading State */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 15px;
+  box-shadow: var(--glass-shadow);
+}
+
+.loading i {
+  color: var(--primary-color);
+  font-size: 2rem;
+  margin-right: 10px;
+}
+
+/* No Results */
+.noResults {
+  text-align: center;
+  padding: 60px 20px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 15px;
+  box-shadow: var(--glass-shadow);
+}
+
+.noResults i {
+  font-size: 4rem;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  opacity: 0.6;
+}
+
+.noResults h3 {
+  font-size: 1.5rem;
+  color: var(--text-color);
+  margin-bottom: 10px;
+}
+
+.noResults p {
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+/* Popup */
+.popup {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 25px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  box-shadow: var(--glass-shadow);
+  color: var(--text-color);
+  z-index: 1000;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .mainContent {
+    padding: 20px 15px;
+  }
+
+  .headerSection {
+    padding: 20px;
+    margin-bottom: 25px;
+  }
+
+  .pageTitle {
+    font-size: 2rem;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .pageSubtitle {
+    font-size: 1rem;
+  }
+
+  .searchContainer {
+    padding: 20px;
+    gap: 15px;
+  }
+
+  .filterButtons {
+    gap: 8px;
+  }
+
+  .filterBtn {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+  }
+
+  .resultsInfo {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .mainContent {
+    padding: 15px 10px;
+  }
+
+  .pageTitle {
+    font-size: 1.8rem;
+  }
+
+  .searchBar input {
+    padding: 12px 12px 12px 40px;
+    font-size: 0.9rem;
+  }
+
+  .filterButtons {
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 5px;
+  }
+
+  .filterBtn {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}

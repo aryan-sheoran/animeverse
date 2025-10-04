@@ -1,0 +1,149 @@
+.section {
+  margin-bottom: 40px;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+}
+
+.sectionHeader h2 {
+  font-size: 22px;
+  color: #e6edf3;
+}
+
+/* Popular Shows Carousel */
+.popularCarouselWrapper {
+  position: relative;
+  width: calc(100% - 80px); /* Account for navigation buttons */
+  max-width: 1440px; /* Exact width for 6 cards: (220px * 6) + (20px * 5) */
+  margin: 0 auto;
+  padding: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.popularListCarousel {
+  display: flex;
+  gap: 20px;
+  padding: 10px 0;
+  user-select: none;
+  transform: translateX(0);
+  will-change: transform;
+  transition: transform 0.5s ease-in-out;
+  min-height: 350px; /* Ensure minimum height for visibility */
+}
+
+.episodeCard {
+  flex: 0 0 220px;
+  width: 220px;
+  min-width: 220px;
+  max-width: 220px;
+  margin: 0;
+  opacity: 1;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.episodeCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(31, 38, 135, 0.4);
+}
+
+.episodeThumbnail {
+  position: relative;
+  height: 280px;
+  overflow: hidden;
+}
+
+.episodeThumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.episodeCard:hover .episodeThumbnail img {
+  transform: scale(1.1);
+}
+
+.episodeInfo {
+  padding: 15px;
+}
+
+.episodeInfo h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #e6edf3;
+}
+
+.episodeInfo p {
+  font-size: 14px;
+  color: rgba(201, 209, 217, 0.8);
+}
+
+/* Navigation Buttons */
+.prevBtn,
+.nextBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  background: rgba(13, 17, 23, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+.prevBtn {
+  left: 10px;
+}
+
+.nextBtn {
+  right: 30px;
+}
+
+.prevBtn:hover,
+.nextBtn:hover {
+  background: #8a2be2;
+  border-color: #8a2be2;
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .popularListCarousel {
+    gap: 15px;
+  }
+
+  .episodeCard {
+    min-width: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .episodeCard {
+    min-width: 160px;
+  }
+
+  .episodeThumbnail {
+    height: 200px;
+  }
+}

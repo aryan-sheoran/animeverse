@@ -1,0 +1,389 @@
+.heroSection {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto 3rem auto;
+  padding: 0 1rem;
+  position: relative;
+}
+
+.heroContainer {
+  position: relative;
+  width: 100%;
+  height: 650px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.heroSlide {
+  position: absolute;
+  width: 450px;
+  height: 550px;
+  border-radius: 24px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: scale(0.8) translateX(0);
+  opacity: 0.6;
+  z-index: 1;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}
+
+.heroSlide.active {
+  transform: scale(1) translateX(0);
+  opacity: 1;
+  z-index: 3;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+}
+
+.heroSlide.prev {
+  transform: scale(0.85) translateX(-390px);
+  opacity: 0.7;
+  z-index: 2;
+}
+
+.heroSlide.next {
+  transform: scale(0.85) translateX(390px);
+  opacity: 0.7;
+  z-index: 2;
+}
+
+.heroSlide.hidden {
+  transform: scale(0.6) translateX(0);
+  opacity: 0;
+  z-index: 0;
+}
+
+.heroOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60%;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.9) 0%,
+    rgba(0, 0, 0, 0.6) 40%,
+    transparent 100%
+  );
+  border-radius: 0 0 24px 24px;
+  z-index: 1;
+}
+
+.heroContent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2rem;
+  color: white;
+  z-index: 10;
+  text-align: center;
+}
+
+.contentWrapper {
+  max-width: 100%;
+  animation: slideUpFade 0.6s ease-out;
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.heroTitle {
+  font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 0.8rem;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.heroDescription {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  color: rgba(255, 255, 255, 0.9);
+  opacity: 0.8;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.primaryBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  background: linear-gradient(135deg, #8a2be2 0%, #6a1db5 100%);
+  border: none;
+  border-radius: 25px;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.primaryBtn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.primaryBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(138, 43, 226, 0.4);
+}
+
+.primaryBtn:hover::before {
+  left: 100%;
+}
+
+/* Simple Navigation Dots */
+.progressIndicators {
+  position: absolute;
+  bottom: -3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.8rem;
+  z-index: 10;
+}
+
+.progressDot {
+  width: 12px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.4);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.progressDot:hover {
+  background: rgba(255, 255, 255, 0.6);
+  transform: scale(1.1);
+}
+
+.progressDot.active {
+  background: #8a2be2;
+  transform: scale(1.2);
+  box-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+}
+
+.progressFill {
+  display: none;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .heroContainer {
+    height: 580px;
+  }
+
+  .heroSlide {
+    width: 420px;
+    height: 500px;
+  }
+
+  .heroSlide.prev,
+  .heroSlide.next {
+    transform: scale(0.8) translateX(240px);
+  }
+
+  .heroSlide.prev {
+    transform: scale(0.8) translateX(-240px);
+  }
+}
+
+@media (max-width: 992px) {
+  .heroContainer {
+    height: 520px;
+  }
+
+  .heroSlide {
+    width: 380px;
+    height: 460px;
+  }
+
+  .heroSlide.prev,
+  .heroSlide.next {
+    transform: scale(0.75) translateX(220px);
+  }
+
+  .heroSlide.prev {
+    transform: scale(0.75) translateX(-220px);
+  }
+
+  .heroContent {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .heroSection {
+    margin-bottom: 2rem;
+  }
+
+  .heroContainer {
+    height: 450px;
+  }
+
+  .heroSlide {
+    width: 320px;
+    height: 400px;
+    border-radius: 20px;
+  }
+
+  .heroSlide.prev,
+  .heroSlide.next {
+    opacity: 0.3;
+    transform: scale(0.7) translateX(170px);
+  }
+
+  .heroSlide.prev {
+    transform: scale(0.7) translateX(-170px);
+  }
+
+  .heroContent {
+    padding: 1.2rem;
+  }
+
+  .heroTitle {
+    font-size: clamp(1.2rem, 2vw, 1.8rem);
+  }
+
+  .heroDescription {
+    font-size: 0.8rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .actionButtons {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .primaryBtn {
+    padding: 0.7rem 1.2rem;
+    font-size: 0.8rem;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .progressIndicators {
+    bottom: -2.5rem;
+    gap: 0.6rem;
+  }
+
+  .progressDot {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroContainer {
+    height: 380px;
+  }
+
+  .heroSlide {
+    width: 280px;
+    height: 340px;
+    border-radius: 16px;
+  }
+
+  .heroSlide.prev,
+  .heroSlide.next {
+    opacity: 0.2;
+    transform: scale(0.6) translateX(130px);
+  }
+
+  .heroSlide.prev {
+    transform: scale(0.6) translateX(-130px);
+  }
+
+  .heroContent {
+    padding: 1rem;
+  }
+
+  .heroTitle {
+    font-size: clamp(1rem, 1.8vw, 1.5rem);
+    margin-bottom: 0.6rem;
+  }
+
+  .heroDescription {
+    font-size: 0.75rem;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+  }
+
+  .primaryBtn {
+    padding: 0.6rem 1rem;
+    font-size: 0.75rem;
+  }
+
+  .progressIndicators {
+    bottom: -2rem;
+    gap: 0.5rem;
+  }
+
+  .progressDot {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+@media (max-width: 360px) {
+  .heroContainer {
+    height: 340px;
+  }
+
+  .heroSlide {
+    width: 240px;
+    height: 300px;
+  }
+
+  .heroSlide.prev,
+  .heroSlide.next {
+    transform: scale(0.5) translateX(100px);
+  }
+
+  .heroSlide.prev {
+    transform: scale(0.5) translateX(-100px);
+  }
+}

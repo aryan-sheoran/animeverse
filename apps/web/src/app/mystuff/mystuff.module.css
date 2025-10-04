@@ -1,0 +1,325 @@
+/* Glassmorphism Base Styles */
+.myStuffRoot {
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  --glass-blur: blur(10px);
+  --gradient-primary: linear-gradient(
+    45deg,
+    rgba(106, 17, 203, 0.4),
+    rgba(37, 117, 252, 0.4)
+  );
+  --primary-color: #8a2be2;
+  --secondary-color: #2575fc;
+  --text-color: #e6edf3;
+  --text-muted: rgba(201, 209, 217, 0.8);
+  --border-color: rgba(255, 255, 255, 0.1);
+}
+
+.myStuffRoot {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+  color: var(--text-color);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  display: flex;
+}
+
+.myStuffRoot::before {
+  content: "";
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(106, 17, 203, 0.1) 0%,
+    rgba(37, 117, 252, 0.1) 100%
+  );
+  animation: rotate 20s linear infinite;
+  z-index: -2;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.glassOrb {
+  position: fixed;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  filter: blur(60px);
+  z-index: -1;
+  opacity: 0.6;
+}
+
+@media (max-width: 768px) {
+  .glassOrb {
+    width: 200px;
+    height: 200px;
+    filter: blur(40px);
+    opacity: 0.4;
+  }
+}
+
+@media (max-width: 480px) {
+  .glassOrb {
+    width: 150px;
+    height: 150px;
+    filter: blur(30px);
+    opacity: 0.3;
+  }
+}
+
+.glassCard {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.glassCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.45);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.mainContent {
+  margin-left: 240px;
+  padding: 30px;
+  width: calc(100% - 240px);
+  overflow-y: auto;
+  height: 100vh;
+  flex: 1;
+  z-index: 1;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1200px) {
+  .mainContent {
+    padding: 25px;
+  }
+}
+
+@media (max-width: 992px) {
+  .mainContent {
+    margin-left: 0;
+    width: 100%;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mainContent {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mainContent {
+    padding: 10px;
+  }
+}
+
+.profileSection {
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .profileSection {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profileSection {
+    padding: 12px;
+  }
+}
+
+.sectionHeader {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: var(--text-color);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+@media (max-width: 768px) {
+  .sectionHeader {
+    font-size: 20px;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sectionHeader {
+    font-size: 18px;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+  }
+}
+
+.profileRow {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 40px;
+  align-items: stretch;
+  min-height: 400px;
+}
+
+@media (max-width: 992px) {
+  .profileRow {
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 30px;
+    min-height: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .profileRow {
+    gap: 12px;
+    margin-bottom: 25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profileRow {
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+}
+
+/* Add a specific style for the blog row */
+.blogRow {
+  margin-top: 60px;
+  min-height: auto;
+  width: 100%;
+  display: block;
+}
+
+@media (max-width: 992px) {
+  .blogRow {
+    margin-top: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .blogRow {
+    margin-top: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .blogRow {
+    margin-top: 20px;
+  }
+}
+
+.profileColumn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.btn {
+  border: none;
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btnPrimary {
+  background: var(--gradient-primary);
+  color: var(--text-color);
+  border: 1px solid var(--glass-border);
+}
+
+.btnPrimary:hover {
+  box-shadow: 0 0 15px rgba(37, 117, 252, 0.5);
+  transform: translateY(-2px);
+}
+
+/* Custom scrollbar for glass effect */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(138, 43, 226, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(138, 43, 226, 0.7);
+}
+
+/* Button improvements for mobile */
+@media (max-width: 768px) {
+  .btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
+
+/* Typography improvements for smaller screens */
+@media (max-width: 360px) {
+  .sectionHeader {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .profileSection {
+    padding: 8px;
+  }
+
+  .profileRow {
+    gap: 8px;
+    margin-bottom: 15px;
+  }
+
+  .blogRow {
+    margin-top: 15px;
+  }
+}

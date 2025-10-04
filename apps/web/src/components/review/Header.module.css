@@ -1,0 +1,14 @@
+.sectionTitle {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.sectionTitle i {
+  margin-right: 10px;
+  color: #6a11cb;
+}

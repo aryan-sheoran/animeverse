@@ -46,8 +46,8 @@ export default function SignupPage() {
         return;
       }
 
-      // Signup successful - redirect to home
-      router.push('/');
+      // Signup successful - redirect to hub
+      router.push('/hub');
     } catch (err: any) {
       setError(err.message || 'Network error. Please try again.');
       setIsLoading(false);

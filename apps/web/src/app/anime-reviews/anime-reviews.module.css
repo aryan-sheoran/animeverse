@@ -1,0 +1,598 @@
+/* AnimeReviews.module.css */
+
+.animeReviewsRoot {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+  position: relative;
+  overflow-x: hidden;
+  display: flex;
+}
+
+/* Glass background elements */
+.glassOrb {
+  position: fixed;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 1;
+  animation: float 6s ease-in-out infinite;
+}
+
+@media (max-width: 768px) {
+  .glassOrb {
+    width: 150px;
+    height: 150px;
+    backdrop-filter: blur(8px);
+    opacity: 0.7;
+  }
+}
+
+@media (max-width: 480px) {
+  .glassOrb {
+    width: 100px;
+    height: 100px;
+    backdrop-filter: blur(6px);
+    opacity: 0.5;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.mainContent {
+  flex: 1;
+  margin-left: 280px;
+  padding: 40px;
+  position: relative;
+  z-index: 2;
+  max-width: calc(100vw - 280px);
+}
+
+@media (max-width: 1200px) {
+  .mainContent {
+    margin-left: 240px;
+    padding: 30px;
+    max-width: calc(100vw - 240px);
+  }
+}
+
+@media (max-width: 992px) {
+  .mainContent {
+    margin-left: 0;
+    padding: 25px;
+    max-width: 100vw;
+  }
+}
+
+@media (max-width: 768px) {
+  .mainContent {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mainContent {
+    padding: 15px;
+  }
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: #e0e6ed;
+  font-size: 1.2rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(231, 76, 60, 0.1);
+  border: 1px solid rgba(231, 76, 60, 0.3);
+  border-radius: 10px;
+  color: #e74c3c;
+  margin-bottom: 30px;
+}
+
+.error i {
+  margin-right: 10px;
+}
+
+/* Anime Header */
+.animeHeader {
+  margin-bottom: 40px;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .animeHeader {
+    padding: 25px 20px;
+    margin-bottom: 30px;
+    border-radius: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .animeHeader {
+    padding: 20px 15px;
+    margin-bottom: 25px;
+    border-radius: 12px;
+  }
+}
+
+.animeDetails {
+  width: 100%;
+}
+
+.animeTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 15px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 1200px) {
+  .animeTitle {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .animeTitle {
+    font-size: 1.8rem;
+    margin-bottom: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .animeTitle {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 360px) {
+  .animeTitle {
+    font-size: 1.3rem;
+  }
+}
+
+.animeRating {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .animeRating {
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .animeRating {
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-direction: column;
+  }
+}
+
+.ratingValue {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #ffd700;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+  .ratingValue {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .ratingValue {
+    font-size: 1.2rem;
+  }
+}
+
+.stars {
+  display: flex;
+  gap: 2px;
+}
+
+.stars i {
+  color: #ffd700;
+  font-size: 1.2rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+  .stars i {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .stars i {
+    font-size: 0.9rem;
+  }
+}
+
+.reviewCount {
+  font-size: 1.2rem;
+  color: #e0e6ed;
+  margin: 0;
+  opacity: 0.8;
+}
+
+/* Reviews Section */
+.reviewsSection {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 30px;
+}
+
+@media (max-width: 768px) {
+  .reviewsSection {
+    padding: 20px;
+    border-radius: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .reviewsSection {
+    padding: 15px;
+    border-radius: 12px;
+  }
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 30px;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+  .sectionTitle {
+    font-size: 1.5rem;
+    gap: 12px;
+    margin-bottom: 25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sectionTitle {
+    font-size: 1.3rem;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 360px) {
+  .sectionTitle {
+    font-size: 1.2rem;
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+.sectionTitle i {
+  color: #3498db;
+}
+
+.reviewsList {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.reviewCard {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 25px;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .reviewCard {
+    padding: 20px;
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .reviewCard {
+    padding: 15px;
+    border-radius: 10px;
+  }
+}
+
+.reviewCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .reviewHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .reviewHeader {
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+}
+
+.reviewerInfo {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+@media (max-width: 480px) {
+  .reviewerInfo {
+    gap: 12px;
+  }
+}
+
+.avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.2rem;
+}
+
+@media (max-width: 480px) {
+  .avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+}
+
+.reviewerDetails h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 5px 0;
+}
+
+.reviewDate {
+  font-size: 0.9rem;
+  color: #a0a6ad;
+  margin: 0;
+}
+
+.reviewRating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reviewContent {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 20px;
+}
+
+.reviewTitle {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 15px;
+}
+
+.reviewText {
+  color: #e0e6ed;
+  line-height: 1.6;
+  margin-bottom: 15px;
+  font-size: 1rem;
+}
+
+.reviewContext {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.contextTag {
+  background: rgba(52, 152, 219, 0.2);
+  color: #3498db;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid rgba(52, 152, 219, 0.3);
+}
+
+.noReviews {
+  text-align: center;
+  padding: 60px 20px;
+  color: #a0a6ad;
+}
+
+.noReviews i {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+.noReviews h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #e0e6ed;
+}
+
+.noReviews p {
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Additional responsive improvements */
+@media (max-width: 768px) {
+  .reviewRating {
+    align-self: flex-start;
+    margin-top: 10px;
+  }
+
+  .reviewerDetails h4 {
+    font-size: 1rem;
+  }
+
+  .reviewDate {
+    font-size: 0.8rem;
+  }
+
+  .reviewTitle {
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+  }
+
+  .reviewText {
+    font-size: 0.95rem;
+  }
+
+  .reviewCount {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .reviewsList {
+    gap: 15px;
+  }
+
+  .reviewContent {
+    padding-top: 15px;
+  }
+
+  .reviewTitle {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+
+  .reviewText {
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+  }
+
+  .contextTag {
+    padding: 4px 10px;
+    font-size: 0.8rem;
+  }
+
+  .reviewCount {
+    font-size: 1rem;
+  }
+
+  .noReviews {
+    padding: 40px 15px;
+  }
+
+  .noReviews i {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+  }
+
+  .noReviews h3 {
+    font-size: 1.3rem;
+  }
+
+  .noReviews p {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .reviewHeader {
+    gap: 10px;
+  }
+
+  .reviewerInfo {
+    gap: 10px;
+  }
+
+  .avatar {
+    width: 35px;
+    height: 35px;
+    font-size: 0.9rem;
+  }
+
+  .reviewerDetails h4 {
+    font-size: 0.9rem;
+  }
+
+  .reviewDate {
+    font-size: 0.75rem;
+  }
+
+  .reviewTitle {
+    font-size: 1rem;
+  }
+
+  .reviewText {
+    font-size: 0.85rem;
+  }
+
+  .ratingValue {
+    font-size: 1.1rem;
+  }
+
+  .stars i {
+    font-size: 0.8rem;
+  }
+}
