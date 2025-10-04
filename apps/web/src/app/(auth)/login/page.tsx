@@ -11,6 +11,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   const togglePassword = () => setShowPassword((s) => !s);
@@ -48,7 +49,13 @@ export default function LoginPage() {
     // Set background for login - dark blue gradient like original Auth.jsx
     document.body.style.background = "linear-gradient(45deg, #0f2027, #203a43, #2c5364)";
     
+    // Trigger fade-in animation after mount
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 50);
+    
     return () => {
+      clearTimeout(timer);
       document.body.style.background = "";
     };
   }, []);
@@ -58,7 +65,13 @@ export default function LoginPage() {
       <div className={styles.big}>
         {/* Left Section - Login Form */}
         <div className={styles.left}>
-          <div className={`${styles.container} ${styles.loginContainer}`}>
+          <div 
+            className={`${styles.container} ${styles.loginContainer}`}
+            style={{ 
+              opacity: isVisible ? 1 : 0,
+              transition: 'opacity 0.5s ease-in-out'
+            }}
+          >
             <h1 className={styles.title}>Welcome Back !!</h1>
             <form ref={formRef} className={styles.form} onSubmit={handleLogin}>
               <div className={styles.inputBox}>
@@ -107,12 +120,24 @@ export default function LoginPage() {
               </p>
             </form>
           </div>
-          <div className={styles.curve} style={{ opacity: 0 }}></div>
+          <div 
+            className={styles.curve} 
+            style={{ 
+              opacity: 0,
+              transition: 'transform 0.8s ease-in-out, opacity 0.8s ease-in-out'
+            }}
+          ></div>
         </div>
 
         {/* Right Section - Decorative Curve */}
         <div className={styles.right}>
-          <div className={styles.curve2} style={{ opacity: 1 }}></div>
+          <div 
+            className={styles.curve2} 
+            style={{ 
+              opacity: isVisible ? 1 : 0,
+              transition: 'transform 0.8s ease-in-out, opacity 0.8s ease-in-out'
+            }}
+          ></div>
         </div>
       </div>
     </div>

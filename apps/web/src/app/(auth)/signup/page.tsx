@@ -11,6 +11,7 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   const togglePassword = () => setShowPassword((s) => !s);
@@ -57,7 +58,13 @@ export default function SignupPage() {
     // Set background for signup - light blue gradient like original Auth.jsx
     document.body.style.background = "linear-gradient(45deg, #e0eafc, #cfdef3)";
     
+    // Trigger fade-in animation after mount
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 50);
+    
     return () => {
+      clearTimeout(timer);
       document.body.style.background = "";
     };
   }, []);
@@ -67,12 +74,25 @@ export default function SignupPage() {
       <div className={styles.big}>
         {/* Left Section - Decorative Curve */}
         <div className={styles.left}>
-          <div className={styles.curve} style={{ opacity: 1 }}></div>
+          <div 
+            className={styles.curve} 
+            style={{ 
+              opacity: isVisible ? 1 : 0,
+              transition: 'transform 0.8s ease-in-out, opacity 0.8s ease-in-out'
+            }}
+          ></div>
         </div>
 
         {/* Right Section - Signup Form */}
         <div className={styles.right}>
-          <div className={`${styles.container2} ${styles.signupContainer}`} style={{ display: 'block', opacity: 1 }}>
+          <div 
+            className={`${styles.container2} ${styles.signupContainer}`} 
+            style={{ 
+              display: 'block', 
+              opacity: isVisible ? 1 : 0,
+              transition: 'opacity 0.5s ease-in-out'
+            }}
+          >
             <h1 className={styles.title}>Welcome !!</h1>
             <form ref={formRef} className={styles.form} onSubmit={handleSignup}>
               <div className="signup-step">
@@ -131,7 +151,13 @@ export default function SignupPage() {
               </div>
             </form>
           </div>
-          <div className={styles.curve2} style={{ opacity: 0 }}></div>
+          <div 
+            className={styles.curve2} 
+            style={{ 
+              opacity: 0,
+              transition: 'transform 0.8s ease-in-out, opacity 0.8s ease-in-out'
+            }}
+          ></div>
         </div>
       </div>
     </div>

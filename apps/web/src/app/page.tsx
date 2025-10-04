@@ -512,7 +512,7 @@ export default function Home() {
       </section>
 
       {/* Sign Up Section */}
-      <section className={styles.authSection}>
+      <section id="auth-section" className={styles.authSection}>
         <div className={`${styles.authContainer} ${styles.reverse}`}>
           <div className={styles.sectionImage}>
             <img 
