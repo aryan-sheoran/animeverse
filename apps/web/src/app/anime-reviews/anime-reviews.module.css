@@ -154,6 +154,41 @@
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
+.animeDescription {
+  font-size: 1.1rem;
+  color: #e0e6ed;
+  margin-bottom: 20px;
+  line-height: 1.6;
+  opacity: 0.9;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.genreTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.genreTag {
+  padding: 5px 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  color: #e0e6ed;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.genreTag:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
 @media (max-width: 1200px) {
   .animeTitle {
     font-size: 2.2rem;
@@ -186,6 +221,13 @@
   gap: 15px;
   margin-bottom: 15px;
   justify-content: center;
+}
+
+.ratingCount {
+  font-size: 0.9rem;
+  color: #e0e6ed;
+  opacity: 0.7;
+  font-weight: 400;
 }
 
 @media (max-width: 768px) {

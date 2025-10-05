@@ -16,6 +16,7 @@ const Review = () => {
   const [reviewText, setReviewText] = useState('');
   const [selectedSeason, setSelectedSeason] = useState('');
   const [selectedEpisode, setSelectedEpisode] = useState('');
+  const [isLoadingShowData, setIsLoadingShowData] = useState(false);
   const [showData, setShowData] = useState<{
     id: string | null;
     title: string;
@@ -66,6 +67,7 @@ const Review = () => {
   }, [searchParams]);
 
   const loadShowData = async (showId: string) => {
+    setIsLoadingShowData(true);
     try {
       // Replace with your actual API call
       const response = await fetch(`/api/shows/${showId}`);
@@ -104,6 +106,8 @@ const Review = () => {
           }
         ],
       }));
+    } finally {
+      setIsLoadingShowData(false);
     }
   };
 
@@ -345,6 +349,7 @@ const Review = () => {
           <div className={styles.leftColumn}>
             <AnimeInfo 
               animeData={showData}
+              isLoading={isLoadingShowData}
               selectedSeason={selectedSeason}
               setSelectedSeason={setSelectedSeason}
               selectedEpisode={selectedEpisode}

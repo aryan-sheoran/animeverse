@@ -20,7 +20,10 @@ const Shows = () => {
     { id: 'all', label: 'All' },
     { id: 'action', label: 'Action' },
     { id: 'adventure', label: 'Adventure' },
-    { id: 'fantasy', label: 'Fantasy' }
+    { id: 'fantasy', label: 'Fantasy' },
+    {id: 'comedy', label: 'Comedy' },
+    { id: 'drama', label: 'Drama' },
+    { id: 'romance', label: 'Romance' },
   ];
 
   useEffect(() => {
@@ -29,8 +32,8 @@ const Shows = () => {
       try {
         console.log('Fetching shows from API...');
         
-        // Fetch shows from database
-        const showsResponse = await fetch('/api/shows?limit=100&sortBy=recent');
+        // Fetch shows from database with ratings included
+        const showsResponse = await fetch('/api/shows?limit=100&sortBy=recent&includeRatings=true');
         
         console.log('Response status:', showsResponse.status);
         
@@ -191,7 +194,7 @@ const Shows = () => {
         <div className={styles.mainContent}>
           <div className={styles.noResults}>
             <i className="fas fa-database"></i>
-            <h3>No shows in database</h3>
+            <h3>No shows in available</h3>
             <p>Add some shows to your database to see them here</p>
           </div>
         </div>

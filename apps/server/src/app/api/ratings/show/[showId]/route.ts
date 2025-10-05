@@ -5,10 +5,10 @@ import mongoose from "mongoose";
 
 export async function GET(
 	request: NextRequest,
-	{ params }: { params: { showId: string } }
+	{ params }: { params: Promise<{ showId: string }> }
 ) {
 	try {
-		const { showId } = params;
+		const { showId } = await params;
 		
 		if (!mongoose.Types.ObjectId.isValid(showId)) {
 			return NextResponse.json(

@@ -49,6 +49,7 @@ const ShowCard: React.FC<ShowCardProps> = ({
   };
 
   // Show average rating as a single star + numeric value out of 10
+  // Backend sends ratings on 0-5 scale, we display as 0-10
   const avgRating = Number.isFinite(Number(show?.rating)) ? Number(show.rating) : null;
   const ratingOutOf10 = avgRating !== null ? (avgRating * 2).toFixed(1) : null;
 
@@ -64,7 +65,9 @@ const ShowCard: React.FC<ShowCardProps> = ({
 
           <div className={styles.showRating}>
             <i className={`fas fa-star ${styles.singleStar}`} aria-hidden="true"></i>
-            <span className={styles.ratingValue}>{ratingOutOf10 ? `${ratingOutOf10}/10` : '—'}</span>
+            <span className={styles.ratingValue}>
+              {ratingOutOf10 ? `${ratingOutOf10}/10` : '0/10'}
+            </span>
           </div>
         </div>
       </div>

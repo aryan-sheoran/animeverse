@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import "@/db"; // Ensure database connection is initialized
 import { HomeItem } from "@/db/models/home-item.model";
+import { Show } from "@/db/models/show.model"; // Import Show model for populate to work
 
 export async function GET(request: NextRequest) {
 	try {

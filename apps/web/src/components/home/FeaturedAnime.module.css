@@ -19,14 +19,15 @@
 /* Featured Anime */
 .featuredAnimeGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 55px;
   margin-bottom: 30px;
+  margin-left: 0px;
 }
 
 .featuredAnimeCard {
   position: relative;
-  height: 350px;
+  height: 420px;
   border-radius: 10px;
   overflow: hidden;
   background-size: cover;
@@ -106,14 +107,38 @@
 }
 
 /* Responsive Design */
-@media (max-width: 1200px) {
+@media (max-width: 1600px) {
   .featuredAnimeGrid {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
+  .featuredAnimeGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .featuredAnimeCard {
+    height: 400px;
+  }
+}
+
+@media (max-width: 900px) {
+  .featuredAnimeGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .featuredAnimeCard {
+    height: 380px;
+  }
+}
+
+@media (max-width: 600px) {
   .featuredAnimeGrid {
     grid-template-columns: 1fr;
+  }
+
+  .featuredAnimeCard {
+    height: 350px;
   }
 }

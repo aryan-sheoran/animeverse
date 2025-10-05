@@ -148,36 +148,37 @@ const Home = () => {
     return () => { mounted = false; };
   }, []);
 
-  // Fetch home items (hero & featured) from backend grouped by section
+  // Fetch hero and featured items from backend
   useEffect(() => {
     let mounted = true;
-    const fetchHome = async () => {
+    const fetchHomeItems = async () => {
       try {
         const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3001';
-        const res = await fetch(`${serverUrl}/api/home`, {
-          credentials: 'include',
-        });
-        
-        if (!res.ok) {
-          console.warn('Home API not available yet');
-          return;
-        }
-        
-        // API returns grouped data: { hero: [...], featured: [...], popular: [...] }
-        const grouped: Record<string, HomeItem[]> = await res.json();
         
         // Helper to map home items to display format
-        const mapItems = (items: HomeItem[]): MappedItem[] => {
-          if (!Array.isArray(items)) return [];
+        const mapItems = (items: HomeItem[], sectionName: string): MappedItem[] => {
+          if (!Array.isArray(items)) {
+            console.warn(`${sectionName} returned non-array data:`, items);
+            return [];
+          }
           
           return items
             .map(h => {
-              if (!h || !h.show) return null;
+              if (!h || !h.show) {
+                console.warn(`Invalid ${sectionName} item:`, h);
+                return null;
+              }
               const show = typeof h.show === 'object' ? h.show : null;
-              if (!show) return null;
+              if (!show) {
+                console.warn(`Show not populated in ${sectionName}:`, h.show);
+                return null;
+              }
               
               const image = pickImage(show);
-              if (!image) return null;
+              if (!image) {
+                console.warn(`No image for show in ${sectionName}:`, show.title);
+                return null;
+              }
               
               return {
                 id: h._id,
@@ -192,38 +193,46 @@ const Home = () => {
             .filter((item): item is MappedItem => item !== null);
         };
 
-        // Extract hero items
-        const heroItems = mapItems(grouped.hero || []);
+        // Fetch hero section
+        const heroRes = await fetch(`${serverUrl}/api/home?section=hero`, {
+          credentials: 'include',
+        });
         
-        // Extract featured items
-        const featuredItems = mapItems(grouped.featured || []);
-        
-        // Extract popular items for the popular shows section
-        const popularItems = mapItems(grouped.popular || []);
-        
-        // Update popular shows if we have data from home_items
-        if (popularItems.length > 0 && mounted) {
-          const mappedPopular: PopularShowItem[] = popularItems.map((item) => ({
-            id: item.id,
-            showId: item.showId,
-            image: item.image,
-            title: item.title,
-            description: item.description,
-            type: (item.genres && item.genres.length ? item.genres[0] : 'Unknown')
-          }));
-          setPopularShows(mappedPopular);
+        if (heroRes.ok) {
+          const heroItems: HomeItem[] = await heroRes.json();
+          console.log('Hero items fetched:', heroItems);
+          const mappedHero = mapItems(heroItems, 'hero');
+          console.log('Mapped hero items:', mappedHero);
+          if (mounted) {
+            setHeroData(mappedHero);
+          }
+        } else {
+          console.warn('Hero API not available');
         }
 
-        if (mounted) {
-          setHeroData(heroItems);
-          setFeaturedAnimes(featuredItems);
+        // Fetch featured section
+        const featuredRes = await fetch(`${serverUrl}/api/home?section=featured`, {
+          credentials: 'include',
+        });
+        
+        if (featuredRes.ok) {
+          const featuredItems: HomeItem[] = await featuredRes.json();
+          console.log('Featured items fetched:', featuredItems);
+          const mappedFeatured = mapItems(featuredItems, 'featured');
+          console.log('Mapped featured items:', mappedFeatured);
+          if (mounted) {
+            setFeaturedAnimes(mappedFeatured);
+          }
+        } else {
+          console.warn('Featured API not available');
         }
+
       } catch (err) {
         console.error('Failed to fetch home items:', err);
       }
     };
 
-    fetchHome();
+    fetchHomeItems();
     return () => { mounted = false; };
   }, []);
 

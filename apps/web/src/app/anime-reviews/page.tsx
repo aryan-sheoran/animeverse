@@ -13,82 +13,103 @@ interface Review {
   createdAt: string;
   seasonNumber?: number;
   episodeNumber?: number;
+  animeTitle?: string;
+  animeImage?: string;
   user?: {
-    username: string;
+    _id: string;
+    name: string;
+    email: string;
   };
 }
 
 interface AnimeInfo {
+  _id: string;
   title: string;
+  imageUrl?: string;
+  coverImageUrl?: string;
+  description?: string;
+  genres?: string[];
   rating: number | null;
+  ratingCount?: number;
 }
 
 const AnimeReviews = () => {
   const searchParams = useSearchParams();
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [animeInfo, setAnimeInfo] = useState<AnimeInfo>({
-    title: '',
-    rating: null
-  });
+  const [animeInfo, setAnimeInfo] = useState<AnimeInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showId, setShowId] = useState<string | null>(null);
 
   useEffect(() => {
     const loadAnimeReviews = async () => {
       try {
         setLoading(true);
+        setError(null);
         
         // Get anime ID from search params
-        const showId = searchParams.get('showId');
+        const paramShowId = searchParams.get('showId');
         
-        if (!showId) {
+        if (!paramShowId) {
           setError('No anime ID provided');
           setLoading(false);
           return;
         }
 
+        setShowId(paramShowId);
+        console.log('🔍 Loading reviews for show ID:', paramShowId);
+
         // Fetch anime details and reviews in parallel
-        try {
-          const [reviewsResponse, showResponse] = await Promise.all([
-            fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/reviews/anime/${showId}`, {
-              credentials: 'include',
-            }),
-            fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/shows/${showId}`, {
-              credentials: 'include',
-            })
-          ]);
+        const reviewsUrl = `/api/reviews/anime/${paramShowId}`;
+        const showUrl = `/api/shows/${paramShowId}?includeRatings=true`;
+        
+        console.log('📡 Fetching from:', reviewsUrl);
+        console.log('📡 Fetching from:', showUrl);
+        
+        const [reviewsResponse, showResponse] = await Promise.all([
+          fetch(reviewsUrl, {
+            credentials: 'include',
+          }),
+          fetch(showUrl, {
+            credentials: 'include',
+          })
+        ]);
 
-          if (reviewsResponse.ok) {
-            const reviewsData = await reviewsResponse.json();
-            setReviews(reviewsData);
+        // Handle reviews
+        console.log('📥 Reviews response status:', reviewsResponse.status, reviewsResponse.ok);
+        if (reviewsResponse.ok) {
+          const reviewsData = await reviewsResponse.json();
+          console.log('✅ Loaded reviews:', reviewsData);
+          console.log('📊 Number of reviews:', reviewsData.length);
+          if (Array.isArray(reviewsData) && reviewsData.length > 0) {
+            console.log('📝 First review:', reviewsData[0]);
           }
+          setReviews(reviewsData || []);
+        } else {
+          const errorText = await reviewsResponse.text();
+          console.error('❌ Failed to fetch reviews:', reviewsResponse.status, errorText);
+          setReviews([]);
+        }
 
-          if (showResponse.ok) {
-            const showData = await showResponse.json();
-            setAnimeInfo({
-              title: showData.title,
-              rating: showData.rating
-            });
-          } else {
-            // Fallback to search params if show data not available
-            const fallbackTitle = searchParams.get('title') 
-              ? decodeURIComponent(searchParams.get('title')!) 
-              : 'Unknown Anime';
-            
-            setAnimeInfo({
-              title: fallbackTitle,
-              rating: null
-            });
-          }
-        } catch (fetchError) {
-          console.error('Error fetching data:', fetchError);
+        // Handle show data
+        console.log('📥 Show response status:', showResponse.status, showResponse.ok);
+        if (showResponse.ok) {
+          const showData = await showResponse.json();
+          console.log('✅ Loaded show data:', showData);
+          setAnimeInfo(showData);
+        } else {
+          const errorText = await showResponse.text();
+          console.error('❌ Failed to fetch show:', showResponse.status);
+          console.error('Error details:', errorText);
+          setError('Failed to load anime information');
           
-          // Set fallback anime info from search params
+          // Set minimal fallback info
           const fallbackTitle = searchParams.get('title') 
             ? decodeURIComponent(searchParams.get('title')!) 
             : 'Unknown Anime';
           
           setAnimeInfo({
+            _id: paramShowId,
             title: fallbackTitle,
             rating: null
           });
@@ -96,14 +117,16 @@ const AnimeReviews = () => {
 
       } catch (error) {
         console.error('Error loading anime reviews:', error);
-        setError('Failed to load reviews');
+        setError('Failed to load reviews. Please try again later.');
         
-        // Set fallback anime info from search params
+        // Set fallback anime info
+        const paramShowId = searchParams.get('showId');
         const fallbackTitle = searchParams.get('title') 
           ? decodeURIComponent(searchParams.get('title')!) 
           : 'Unknown Anime';
         
         setAnimeInfo({
+          _id: paramShowId || '',
           title: fallbackTitle,
           rating: null
         });
@@ -170,20 +193,35 @@ const AnimeReviews = () => {
       <div className={styles.mainContent}>
         {/* Anime Header */}
         <div className={styles.animeHeader}>
-          <div className={styles.animeDetails}>
-            <h1 className={styles.animeTitle}>{animeInfo.title}</h1>
-            {animeInfo.rating && (
-              <div className={styles.animeRating}>
-                <span className={styles.ratingValue}>{(animeInfo.rating * 2).toFixed(1)}/10</span>
-                <div className={styles.stars}>
-                  {renderStars(animeInfo.rating * 2)}
+          {animeInfo && (
+            <div className={styles.animeDetails}>
+              <h1 className={styles.animeTitle}>{animeInfo.title}</h1>
+              {animeInfo.description && (
+                <p className={styles.animeDescription}>{animeInfo.description}</p>
+              )}
+              {animeInfo.genres && animeInfo.genres.length > 0 && (
+                <div className={styles.genreTags}>
+                  {animeInfo.genres.map((genre, index) => (
+                    <span key={index} className={styles.genreTag}>{genre}</span>
+                  ))}
                 </div>
-              </div>
-            )}
-            <p className={styles.reviewCount}>
-              {reviews.length} {reviews.length === 1 ? 'Review' : 'Reviews'}
-            </p>
-          </div>
+              )}
+              {animeInfo.rating !== null && animeInfo.rating > 0 && (
+                <div className={styles.animeRating}>
+                  <span className={styles.ratingValue}>{(animeInfo.rating * 2).toFixed(1)}/10</span>
+                  <div className={styles.stars}>
+                    {renderStars(animeInfo.rating * 2)}
+                  </div>
+                  {animeInfo.ratingCount && (
+                    <span className={styles.ratingCount}>({animeInfo.ratingCount} ratings)</span>
+                  )}
+                </div>
+              )}
+              <p className={styles.reviewCount}>
+                {reviews.length} {reviews.length === 1 ? 'Review' : 'Reviews'}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Reviews Section */}
@@ -200,7 +238,14 @@ const AnimeReviews = () => {
             </div>
           )}
 
-          {reviews.length > 0 ? (
+          {loading && (
+            <div className={styles.loading}>
+              <i className="fas fa-spinner fa-spin"></i>
+              <span style={{ marginLeft: '10px' }}>Loading reviews...</span>
+            </div>
+          )}
+          
+          {!loading && reviews.length > 0 ? (
             <div className={styles.reviewsList}>
               {reviews.map((review) => (
                 <div key={review._id} className={styles.reviewCard}>
@@ -211,7 +256,7 @@ const AnimeReviews = () => {
                       </div>
                       <div className={styles.reviewerDetails}>
                         <h4 className={styles.reviewerName}>
-                          {review.user?.username || 'Anonymous'}
+                          {review.user?.name || 'Anonymous User'}
                         </h4>
                         <p className={styles.reviewDate}>
                           {formatDate(review.createdAt)}
@@ -248,13 +293,19 @@ const AnimeReviews = () => {
                 </div>
               ))}
             </div>
-          ) : (
+          ) : !loading ? (
             <div className={styles.noReviews}>
               <i className="fas fa-comment-slash"></i>
               <h3>No reviews yet</h3>
               <p>Be the first to review this anime!</p>
+              {showId && (
+                <div style={{ marginTop: '15px', fontSize: '0.85rem', opacity: 0.6 }}>
+                  <p>Show ID: {showId}</p>
+                  <p>Looking for reviews with animeId matching this show's ID</p>
+                </div>
+              )}
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

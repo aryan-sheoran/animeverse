@@ -38,7 +38,8 @@ const ExploreReview = () => {
     const loadData = async () => {
       setLoading(true);
       try {
-        const showsResponse = await fetch('/api/shows');
+        // Fetch shows with ratings already calculated by the backend
+        const showsResponse = await fetch('/api/shows?includeRatings=true');
         const showsData = await showsResponse.json();
 
         // Format basic show data - only include shows with valid images
@@ -49,59 +50,12 @@ const ExploreReview = () => {
             id: show._id,
             image: show.imageUrl,
             category: show.genres && show.genres.length > 0 ? show.genres[0].toLowerCase() : 'action',
-            rating: show.rating ?? null
+            rating: show.rating ?? 0,
+            reviewCount: show.ratingCount ?? 0
           }));
 
-        // For each show, fetch reviews and season ratings to compute average rating
-        const showsWithRatings = await Promise.all(formattedShows.map(async (s: Show) => {
-          try {
-            // Fetch season ratings (5-point scale)
-            const seasonRatingsRes = await fetch(`/api/ratings/show/${s._id}`);
-            const seasonRatings = seasonRatingsRes.ok ? await seasonRatingsRes.json() : [];
-
-            // Fetch reviews for this anime (reviews use 0-10 scale)
-            let reviewRatings: any[] = [];
-            try {
-              const reviewsRes = await fetch(`/api/reviews/anime/${s._id}`);
-              reviewRatings = reviewsRes.ok ? await reviewsRes.json() : [];
-            } catch (revErr) {
-              console.warn(`Failed to fetch reviews for show ${s._id}:`, revErr);
-              reviewRatings = [];
-            }
-
-            // Normalize ratings: season ratings are 0-5 already; review ratings are 0-10 -> convert to 0-5
-            const seasonVals = Array.isArray(seasonRatings) 
-              ? seasonRatings.map((r: any) => Number(r.rating || 0)).filter((v: number) => !Number.isNaN(v))
-              : [];
-            const reviewVals = Array.isArray(reviewRatings)
-              ? reviewRatings
-                  .map((r: any) => {
-                    const val = Number(r.rating);
-                    return Number.isFinite(val) ? Math.max(0, Math.min(5, val / 2)) : null;
-                  })
-                  .filter((v): v is number => v !== null && !Number.isNaN(v))
-              : [];
-
-            const allVals = [...seasonVals, ...reviewVals];
-
-            if (allVals.length === 0) {
-              return { ...s, rating: s.rating ?? null, reviewCount: 0 };
-            }
-
-            const avg = allVals.reduce((sum, v) => sum + v, 0) / allVals.length;
-            return { 
-              ...s, 
-              rating: Number(avg.toFixed(1)), 
-              reviewCount: reviewRatings.length + seasonRatings.length 
-            };
-          } catch (err) {
-            console.warn(`Failed to fetch ratings for show ${s._id}:`, err);
-            return { ...s, rating: s.rating ?? null, reviewCount: 0 };
-          }
-        }));
-
         // Sort shows by review count and rating for better "explore" experience
-        const sortedShows = showsWithRatings.sort((a, b) => {
+        const sortedShows = formattedShows.sort((a: any, b: any) => {
           if (b.reviewCount !== a.reviewCount) {
             return b.reviewCount - a.reviewCount; // Most reviewed first
           }
@@ -177,28 +131,28 @@ const ExploreReview = () => {
       <Sidebar />
 
       <div className={styles.mainContent}>
-        {/* Header Section */}
+        {/* Header Section with Title, Search, and Filters - All Horizontal */}
         <div className={styles.headerSection}>
+          {/* Left: Title */}
           <h1 className={styles.pageTitle}>
             <i className="fas fa-search"></i>
             Explore Reviews
           </h1>
-          <p className={styles.pageSubtitle}>
-            Discover anime through community reviews and ratings
-          </p>
-        </div>
 
-        {/* Search and Filter Bar */}
-        <div className={styles.searchContainer}>
-          <div className={styles.searchBar}>
-            <i className="fas fa-search"></i>
-            <input
-              type="text"
-              placeholder="Search anime by title..."
-              value={searchQuery}
-              onChange={handleSearchChange}
-            />
+          {/* Middle: Search Bar */}
+          <div className={styles.searchContainer}>
+            <div className={styles.searchBar}>
+              <i className="fas fa-search"></i>
+              <input
+                type="text"
+                placeholder="Search anime by title..."
+                value={searchQuery}
+                onChange={handleSearchChange}
+              />
+            </div>
           </div>
+
+          {/* Right: Filter Buttons */}
           <div className={styles.filterButtons}>
             {filterCategories.map(category => (
               <button
@@ -210,18 +164,6 @@ const ExploreReview = () => {
               </button>
             ))}
           </div>
-        </div>
-
-        {/* Results Info */}
-        <div className={styles.resultsInfo}>
-          <span className={styles.resultsCount}>
-            {filteredShows.length} anime {filteredShows.length === 1 ? 'found' : 'found'}
-          </span>
-          {activeFilter !== 'all' && (
-            <span className={styles.activeFilter}>
-              Filtered by: {filterCategories.find(cat => cat.id === activeFilter)?.label}
-            </span>
-          )}
         </div>
 
         {/* Shows Grid */}

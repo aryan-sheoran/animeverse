@@ -13,6 +13,7 @@ interface AnimeInfoProps {
       status?: string;
     }>;
   };
+  isLoading?: boolean;
   selectedSeason: string;
   setSelectedSeason: (value: string) => void;
   selectedEpisode: string;
@@ -21,14 +22,15 @@ interface AnimeInfoProps {
 
 const AnimeInfo: React.FC<AnimeInfoProps> = ({ 
   animeData, 
+  isLoading = false,
   selectedSeason, 
   setSelectedSeason, 
   selectedEpisode, 
   setSelectedEpisode 
 }) => {
-  const title = animeData?.title || 'Unknown Anime';
+  const title = isLoading ? 'Loading...' : (animeData?.title || 'Unknown Anime');
   const image = animeData?.image;
-  const info = animeData?.info || '';
+  const info = isLoading ? 'Loading anime information...' : (animeData?.info || '');
 
   const handleSeasonChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedSeason(e.target.value);
@@ -42,7 +44,12 @@ const AnimeInfo: React.FC<AnimeInfoProps> = ({
     <div className={styles.animeInfoContainer}>
       {/* Anime Poster */}
       <div className={styles.animePoster}>
-        {image ? (
+        {isLoading ? (
+          <div className={styles.imagePlaceholder}>
+            <i className="fas fa-spinner fa-spin"></i>
+            <span>Loading...</span>
+          </div>
+        ) : image ? (
           <img
             src={image}
             alt={`${title} Poster`}
