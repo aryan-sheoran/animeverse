@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import "@/db"; // Ensure database connection is initialized
 import { Show } from "@/db/models/show.model";
 
 export async function GET(request: NextRequest) {
@@ -24,8 +25,7 @@ export async function GET(request: NextRequest) {
 		}
 		
 		const sort: any = {};
-		if (sortBy === 'rating') sort.rating = -1;
-		else if (sortBy === 'title') sort.title = 1;
+		if (sortBy === 'title') sort.title = 1;
 		else sort.createdAt = -1;
 		
 		const shows = await Show.find(query)
@@ -33,6 +33,8 @@ export async function GET(request: NextRequest) {
 			.limit(limit)
 			.skip(skip)
 			.lean();
+		
+		console.log(`API: Found ${shows.length} shows in database`);
 		
 		return NextResponse.json(shows);
 	} catch (error) {

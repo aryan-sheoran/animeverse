@@ -3,33 +3,6 @@ import "@/db"; // Ensure database connection is initialized
 import { Review } from "@/db/models/review.model";
 import { auth } from "@/lib/auth";
 
-export async function GET(request: NextRequest) {
-	try {
-		const session = await auth.api.getSession({
-			headers: request.headers,
-		});
-		
-		if (!session?.user) {
-			return NextResponse.json(
-				{ error: 'Unauthorized' },
-				{ status: 401 }
-			);
-		}
-		
-		const reviews = await Review.find({ user: session.user.id })
-			.sort({ createdAt: -1 })
-			.lean();
-		
-		return NextResponse.json(reviews);
-	} catch (error) {
-		console.error('Error fetching reviews:', error);
-		return NextResponse.json(
-			{ error: 'Failed to fetch reviews' },
-			{ status: 500 }
-		);
-	}
-}
-
 export async function POST(request: NextRequest) {
 	try {
 		const session = await auth.api.getSession({
@@ -44,6 +17,31 @@ export async function POST(request: NextRequest) {
 		}
 		
 		const body = await request.json();
+		
+		// Validate required fields
+		if (!body.animeId || !body.animeTitle || !body.title || !body.content || body.rating === undefined) {
+			return NextResponse.json(
+				{ error: 'Missing required fields' },
+				{ status: 400 }
+			);
+		}
+		
+		// Check for duplicate review if episode is specified
+		if (body.episodeNumber !== undefined) {
+			const existingReview = await Review.findOne({
+				user: session.user.id,
+				animeId: body.animeId,
+				seasonNumber: body.seasonNumber,
+				episodeNumber: body.episodeNumber,
+			});
+			
+			if (existingReview) {
+				return NextResponse.json(
+					{ error: 'You have already reviewed this episode' },
+					{ status: 400 }
+				);
+			}
+		}
 		
 		const review = await Review.create({
 			...body,

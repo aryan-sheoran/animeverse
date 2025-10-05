@@ -8,10 +8,6 @@ interface ReviewFormProps {
   setReviewTitle: (title: string) => void;
   reviewText: string;
   setReviewText: (text: string) => void;
-  bestMoment: string;
-  setBestMoment: (moment: string) => void;
-  worstMoment: string;
-  setWorstMoment: (moment: string) => void;
   onSubmit: () => void;
   onClear: () => void;
 }
@@ -23,10 +19,6 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   setReviewTitle,
   reviewText,
   setReviewText,
-  bestMoment,
-  setBestMoment,
-  worstMoment,
-  setWorstMoment,
   onSubmit,
   onClear
 }) => {
@@ -85,31 +77,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
             value={reviewText}
             onChange={(e) => setReviewText(e.target.value)}
             required
-            rows={4}
-          />
-        </div>
-
-        {/* Best Moment */}
-        <div className={styles.formGroup}>
-          <label className={styles.formLabel}>Best Moment</label>
-          <textarea
-            className={`${styles.formControl} ${styles.momentTextarea}`}
-            placeholder="What was your favorite scene or moment?"
-            value={bestMoment}
-            onChange={(e) => setBestMoment(e.target.value)}
-            rows={3}
-          />
-        </div>
-
-        {/* Worst Moment */}
-        <div className={styles.formGroup}>
-          <label className={styles.formLabel}>Worst Moment</label>
-          <textarea
-            className={`${styles.formControl} ${styles.momentTextarea}`}
-            placeholder="What disappointed you the most?"
-            value={worstMoment}
-            onChange={(e) => setWorstMoment(e.target.value)}
-            rows={3}
+            rows={6}
           />
         </div>
 

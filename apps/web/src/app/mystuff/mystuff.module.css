@@ -89,9 +89,10 @@
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
   border-radius: 10px;
-  overflow: hidden;
+  overflow: visible;
   transition: all 0.3s ease;
-  height: 100%;
+  height: auto;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -143,6 +144,8 @@
   padding: 20px;
   width: 100%;
   box-sizing: border-box;
+  overflow-x: auto;
+  overflow-y: visible;
 }
 
 @media (max-width: 768px) {
@@ -213,36 +216,36 @@
   }
 }
 
-/* Add a specific style for the blog row */
-.blogRow {
-  margin-top: 60px;
-  min-height: auto;
-  width: 100%;
-  display: block;
-}
-
-@media (max-width: 992px) {
-  .blogRow {
-    margin-top: 40px;
-  }
-}
-
-@media (max-width: 768px) {
-  .blogRow {
-    margin-top: 30px;
-  }
-}
-
-@media (max-width: 480px) {
-  .blogRow {
-    margin-top: 20px;
-  }
-}
-
 .profileColumn {
   flex: 1;
   display: flex;
   flex-direction: column;
+}
+
+.showsRow {
+  width: 100%;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-color);
+  overflow-x: auto;
+  overflow-y: visible;
+  min-height: 400px;
+}
+
+@media (max-width: 768px) {
+  .showsRow {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    min-height: 350px;
+  }
+}
+
+@media (max-width: 480px) {
+  .showsRow {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    min-height: 300px;
+  }
 }
 
 .btn {
@@ -273,10 +276,12 @@
 /* Custom scrollbar for glass effect */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -286,6 +291,13 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(138, 43, 226, 0.7);
+}
+
+/* Smooth scrolling for better UX */
+.showsRow,
+.profileSection,
+.myShowsSection {
+  scroll-behavior: smooth;
 }
 
 /* Button improvements for mobile */
@@ -318,8 +330,30 @@
     gap: 8px;
     margin-bottom: 15px;
   }
+}
 
-  .blogRow {
-    margin-top: 15px;
+/* Loading State */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  font-size: 18px;
+  color: var(--text-color);
+  text-align: center;
+}
+
+.loading i {
+  font-size: 24px;
+  color: var(--primary-color);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }

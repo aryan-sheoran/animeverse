@@ -7,6 +7,10 @@ interface User {
   id: string;
   email: string;
   name: string;
+  emailVerified: boolean;
+  image?: string;
+  createdAt: Date;
+  updatedAt: Date;
   username?: string;
   bio?: string;
   location?: string;

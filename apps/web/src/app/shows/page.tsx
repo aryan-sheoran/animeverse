@@ -6,74 +6,6 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import ShowCard from '@/components/shows/ShowCard';
 import styles from './shows.module.css';
 
-// Mock data for shows - replace with your API calls
-const mockShows = [
-  {
-    _id: '1',
-    id: '1',
-    title: 'Attack on Titan',
-    image: '/assets/card-images/aot.jpeg',
-    genre: ['Action', 'Fantasy'],
-    rating: 4.8,
-  },
-  {
-    _id: '2',
-    id: '2',
-    title: 'Berserk',
-    image: '/assets/card-images/berserk.jpeg',
-    genre: ['Action', 'Fantasy'],
-    rating: 4.9,
-  },
-  {
-    _id: '3',
-    id: '3',
-    title: 'Black Clover',
-    image: '/assets/card-images/black-clover.jpeg',
-    genre: ['Action', 'Adventure'],
-    rating: 4.5,
-  },
-  {
-    _id: '4',
-    id: '4',
-    title: 'Demon Slayer',
-    image: '/assets/card-images/demon.jpeg',
-    genre: ['Action', 'Adventure'],
-    rating: 4.7,
-  },
-  {
-    _id: '5',
-    id: '5',
-    title: 'Jujutsu Kaisen',
-    image: '/assets/card-images/jjk.jpeg',
-    genre: ['Action', 'Fantasy'],
-    rating: 4.6,
-  },
-  {
-    _id: '6',
-    id: '6',
-    title: 'One Piece',
-    image: '/assets/card-images/one.jpeg',
-    genre: ['Adventure', 'Fantasy'],
-    rating: 4.9,
-  },
-  {
-    _id: '7',
-    id: '7',
-    title: 'Naruto',
-    image: '/assets/card-images/naruto.jpeg',
-    genre: ['Action', 'Adventure'],
-    rating: 4.7,
-  },
-  {
-    _id: '8',
-    id: '8',
-    title: 'Solo Leveling',
-    image: '/assets/card-images/sololeveling.jpeg',
-    genre: ['Action', 'Fantasy'],
-    rating: 4.8,
-  },
-];
-
 const Shows = () => {
   const router = useRouter();
   const [shows, setShows] = useState<any[]>([]);
@@ -95,26 +27,68 @@ const Shows = () => {
     const loadData = async () => {
       setLoading(true);
       try {
-        // Replace with your actual API calls
-        // For now, using mock data
-        await new Promise(resolve => setTimeout(resolve, 500));
+        console.log('Fetching shows from API...');
         
-        const showsData = mockShows.map(show => ({
+        // Fetch shows from database
+        const showsResponse = await fetch('/api/shows?limit=100&sortBy=recent');
+        
+        console.log('Response status:', showsResponse.status);
+        
+        if (!showsResponse.ok) {
+          const errorText = await showsResponse.text();
+          console.error('API Error:', errorText);
+          throw new Error(`Failed to fetch shows: ${showsResponse.status}`);
+        }
+        
+        const showsData = await showsResponse.json();
+        console.log('Fetched shows data:', showsData);
+        console.log('Number of shows:', showsData.length);
+        
+        // Check if showsData is an array
+        if (!Array.isArray(showsData)) {
+          console.error('Shows data is not an array:', showsData);
+          throw new Error('Invalid data format received from API');
+        }
+        
+        // Transform data for frontend
+        const transformedShows = showsData.map((show: any) => ({
           ...show,
-          id: show._id,
-          category: show.genre && show.genre.length > 0 ? show.genre[0].toLowerCase() : 'action',
+          id: show._id?.toString() || show._id,
+          image: show.imageUrl || show.coverImageUrl || '/assets/card-images/default.jpeg',
+          genre: show.genres || [],
+          category: show.genres && show.genres.length > 0 ? show.genres[0].toLowerCase() : 'all',
         }));
 
-        setShows(showsData);
-        setFilteredShows(showsData);
+        console.log('Transformed shows:', transformedShows);
+        setShows(transformedShows);
+        setFilteredShows(transformedShows);
         
         // Load user shows from your API
-        // const userShowsResponse = await fetch('/api/user-shows');
-        // const userShows = await userShowsResponse.json();
-        // setUserShowIds(new Set(userShows.map(s => s.showId)));
+        try {
+          const userShowsResponse = await fetch('/api/user-shows', {
+            credentials: 'include',
+          });
+          if (userShowsResponse.ok) {
+            const userShows = await userShowsResponse.json();
+            console.log('User shows loaded:', userShows);
+            // Extract showId correctly - it could be in showId._id or showId as string
+            const showIds = userShows.map((s: any) => {
+              if (typeof s.showId === 'object' && s.showId?._id) {
+                return s.showId._id.toString();
+              }
+              return s.showId?.toString();
+            }).filter(Boolean);
+            console.log('Extracted show IDs:', showIds);
+            setUserShowIds(new Set(showIds));
+          }
+        } catch (err) {
+          console.log('Could not load user shows (user may not be logged in)');
+        }
 
       } catch (error) {
-        console.error('Error loading data:', error);
+        console.error('Error loading shows:', error);
+        setShows([]);
+        setFilteredShows([]);
       } finally {
         setLoading(false);
       }
@@ -159,19 +133,31 @@ const Shows = () => {
     }
 
     try {
-      // Replace with your actual API call
-      // await fetch('/api/user-shows', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ showId })
-      // });
+      const response = await fetch('/api/user-shows', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ 
+          showId,
+          isFavorite: false
+        })
+      });
       
-      setUserShowIds(prevIds => new Set([...prevIds, showId]));
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        throw new Error(errorData.error || 'Failed to add show');
+      }
+      
+      const addedShow = await response.json();
+      console.log('Show added:', addedShow);
+      
+      // Add the showId to local state
+      setUserShowIds(prevIds => new Set([...prevIds, showId.toString()]));
       setPopup({ show: true, message: 'Show added successfully!' });
       setTimeout(() => setPopup({ show: false, message: '' }), 3000);
     } catch (error) {
       console.error('Failed to add show to user list', error);
-      setPopup({ show: true, message: 'Failed to add show. Please try again.' });
+      setPopup({ show: true, message: error instanceof Error ? error.message : 'Failed to add show. Please try again.' });
       setTimeout(() => setPopup({ show: false, message: '' }), 3000);
     }
   };
@@ -190,7 +176,23 @@ const Shows = () => {
         <div className={styles.mainContent}>
           <div className={styles.loading}>
             <i className="fas fa-spinner fa-spin"></i>
-            <span style={{ marginLeft: '10px' }}>Loading shows...</span>
+            <span style={{ marginLeft: '10px' }}>Loading shows from database...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show message if no shows at all (not filtered, but actually no shows)
+  if (!loading && shows.length === 0) {
+    return (
+      <div className={styles.showsRoot}>
+        <Sidebar />
+        <div className={styles.mainContent}>
+          <div className={styles.noResults}>
+            <i className="fas fa-database"></i>
+            <h3>No shows in database</h3>
+            <p>Add some shows to your database to see them here</p>
           </div>
         </div>
       </div>

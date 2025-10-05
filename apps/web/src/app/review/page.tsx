@@ -1,18 +1,19 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import styles from './review.module.css';
 import Sidebar from '@/components/sidebar/Sidebar';
 import { Header, AnimeInfo, ReviewForm } from '@/components/review';
+import { client } from '@/utils/orpc';
+import { toast } from 'sonner';
 
 const Review = () => {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [rating, setRating] = useState(4);
   const [reviewTitle, setReviewTitle] = useState('');
   const [reviewText, setReviewText] = useState('');
-  const [bestMoment, setBestMoment] = useState('');
-  const [worstMoment, setWorstMoment] = useState('');
   const [selectedSeason, setSelectedSeason] = useState('');
   const [selectedEpisode, setSelectedEpisode] = useState('');
   const [showData, setShowData] = useState<{
@@ -36,9 +37,13 @@ const Review = () => {
   const [userSeasonRatings, setUserSeasonRatings] = useState<any[]>([]);
   const [existingReviews, setExistingReviews] = useState<any[]>([]);
   const [episodeReviews, setEpisodeReviews] = useState<any[]>([]);
+  const [myReviews, setMyReviews] = useState<any[]>([]);
 
   useEffect(() => {
     const showIdParam = searchParams.get('showId');
+
+    // Load user's reviews once
+    loadMyReviews();
 
     if (showIdParam) {
       loadShowData(showIdParam);
@@ -113,12 +118,32 @@ const Review = () => {
     }
   };
 
+  const loadMyReviews = async () => {
+    try {
+      // Try REST API first as fallback
+      const response = await fetch('/api/reviews/my-reviews', {
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setMyReviews(data);
+      }
+    } catch (error) {
+      console.error('Error loading my reviews:', error);
+      // Silently fail - user might not be logged in
+    }
+  };
+
   const loadExistingReviews = async (showId: string) => {
     try {
-      // Replace with your actual API call
-      const response = await fetch(`/api/reviews/anime/${showId}`);
-      const data = await response.json();
-      setExistingReviews(data);
+      // Use REST API endpoint that already exists
+      const response = await fetch(`/api/reviews/anime/${showId}`, {
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setExistingReviews(data);
+      }
     } catch (error) {
       console.error('Error loading existing reviews:', error);
     }
@@ -126,10 +151,19 @@ const Review = () => {
 
   const loadEpisodeReviews = async (showId: string, seasonNumber: string, episodeNumber: string) => {
     try {
-      // Replace with your actual API call
-      const response = await fetch(`/api/reviews/anime/${showId}/season/${seasonNumber}/episode/${episodeNumber}`);
-      const data = await response.json();
-      setEpisodeReviews(data);
+      // Use REST API endpoint
+      const response = await fetch(`/api/reviews/anime/${showId}`, {
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const allReviews = await response.json();
+        // Filter for specific episode
+        const filtered = allReviews.filter((review: any) => 
+          review.seasonNumber === parseInt(seasonNumber) &&
+          review.episodeNumber === parseInt(episodeNumber)
+        );
+        setEpisodeReviews(filtered);
+      }
     } catch (error) {
       console.error('Error loading episode reviews:', error);
     }
@@ -161,46 +195,113 @@ const Review = () => {
   };
 
   const handleSubmitReview = async () => {
-    if (!reviewTitle || !reviewText) {
-      alert('Please provide a title and content for your review.');
+    // Validate all required fields
+    if (!showData.id) {
+      toast.error('Please select a show to review.');
       return;
     }
 
-    const reviewData = {
+    if (!showData.title) {
+      toast.error('Show title is missing.');
+      return;
+    }
+
+    if (!reviewTitle || reviewTitle.trim().length === 0) {
+      toast.error('Please provide a title for your review.');
+      return;
+    }
+
+    if (!reviewText || reviewText.trim().length < 10) {
+      toast.error('Please provide review content (at least 10 characters).');
+      return;
+    }
+
+    if (rating < 0 || rating > 10) {
+      toast.error('Please provide a valid rating (0-10).');
+      return;
+    }
+
+    // Check if user already reviewed this episode
+    if (selectedEpisode) {
+      const existingEpisodeReview = myReviews.find(
+        (review: any) => 
+          review.animeId === showData.id &&
+          review.seasonNumber === parseInt(selectedSeason) &&
+          review.episodeNumber === parseInt(selectedEpisode)
+      );
+      
+      if (existingEpisodeReview) {
+        toast.error('You have already reviewed this episode. Please edit your existing review instead.');
+        return;
+      }
+    }
+
+    const reviewData: any = {
       animeId: showData.id,
       animeTitle: showData.title,
-      animeImage: showData.image,
-      rating,
-      title: reviewTitle,
-      content: reviewText,
-      bestMoment: bestMoment || '',
-      worstMoment: worstMoment || '',
-      seasonNumber: selectedSeason || null,
-      episodeNumber: selectedEpisode || null,
+      rating: rating,
+      title: reviewTitle.trim(),
+      content: reviewText.trim(),
     };
 
+    // Add optional fields
+    if (showData.image) {
+      reviewData.animeImage = showData.image;
+    }
+
+    // Only add season/episode if both are selected
+    if (selectedSeason && selectedEpisode) {
+      reviewData.seasonNumber = parseInt(selectedSeason);
+      reviewData.episodeNumber = parseInt(selectedEpisode);
+    }
+
+    console.log('Submitting review data:', {
+      ...reviewData,
+      titleLength: reviewData.title.length,
+      contentLength: reviewData.content.length,
+      ratingType: typeof reviewData.rating,
+    });
+
     try {
-      // Replace with your actual API call
+      // Use REST API endpoint
       const response = await fetch('/api/reviews', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(reviewData)
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(reviewData),
       });
-      
-      if (response.ok) {
-        alert('Review submitted successfully!');
-        handleClearReview();
-        // Refresh reviews after successful submission
-        if (showData.id) {
-          loadExistingReviews(showData.id);
-          if (selectedSeason && selectedEpisode) {
-            loadEpisodeReviews(showData.id, selectedSeason, selectedEpisode);
-          }
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to submit review');
+      }
+
+      toast.success('Review submitted successfully!');
+      handleClearReview();
+      // Refresh reviews after successful submission
+      loadMyReviews();
+      if (showData.id) {
+        loadExistingReviews(showData.id);
+        if (selectedSeason && selectedEpisode) {
+          loadEpisodeReviews(showData.id, selectedSeason, selectedEpisode);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting review:', error);
-      alert('Failed to submit review. Please try again.');
+      console.error('Error details:', JSON.stringify(error, null, 2));
+      
+      // Extract more detailed error message
+      let errorMessage = 'Failed to submit review. Please try again.';
+      if (error?.message) {
+        errorMessage = error.message;
+      } else if (error?.issues) {
+        // Zod validation errors
+        errorMessage = error.issues.map((issue: any) => issue.message).join(', ');
+      }
+      
+      toast.error(errorMessage);
     }
   };
 
@@ -208,8 +309,6 @@ const Review = () => {
     setRating(0);
     setReviewTitle('');
     setReviewText('');
-    setBestMoment('');
-    setWorstMoment('');
     setSelectedSeason('');
     setSelectedEpisode('');
   };
@@ -226,9 +325,18 @@ const Review = () => {
 
       {/* Main Content */}
       <div className={styles.mainContent}>
-        {/* Header */}
+        {/* Header with Back Button */}
         <div className={styles.reviewHeader}>
           <Header />
+          <button
+            onClick={() => router.push('/shows')}
+            className={styles.backButton}
+          >
+            <svg className={styles.backIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back
+          </button>
         </div>
 
         {/* Two Column Layout */}
@@ -253,10 +361,6 @@ const Review = () => {
               setReviewTitle={setReviewTitle}
               reviewText={reviewText}
               setReviewText={setReviewText}
-              bestMoment={bestMoment}
-              setBestMoment={setBestMoment}
-              worstMoment={worstMoment}
-              setWorstMoment={setWorstMoment}
               onSubmit={handleSubmitReview}
               onClear={handleClearReview}
             />

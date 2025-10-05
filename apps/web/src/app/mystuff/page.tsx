@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/use-auth';
 import Sidebar from '@/components/sidebar/Sidebar';
-import { UserProfile, ReviewsSection, BlogSection } from '@/components/mystuff';
+import { UserProfile, ReviewsSection, BlogSection, MyShowsSection } from '@/components/mystuff';
 import styles from './mystuff.module.css';
 
 interface BlogPost {
@@ -87,8 +87,9 @@ const MyStuff = () => {
       <div className={styles.myStuffRoot}>
         <Sidebar />
         <div className={styles.mainContent}>
-          <div className={styles.profileSection}>
-            <div className={styles.sectionHeader}>Loading...</div>
+          <div className={styles.loading}>
+            <i className="fas fa-spinner fa-spin"></i>
+            <span style={{ marginLeft: '10px' }}>Loading your profile...</span>
           </div>
         </div>
       </div>
@@ -113,15 +114,13 @@ const MyStuff = () => {
             <div className={styles.profileColumn}>
               <UserProfile />
             </div>
-            <div className={styles.profileColumn}>
-              <ReviewsSection reviews={reviews} />
-            </div>
           </div>
 
-          {/* Second Row: Blog Section at the bottom */}
-          <div className={`${styles.profileRow} ${styles.blogRow}`}>
-            <BlogSection blogPosts={blogPosts} onUpdate={fetchBlogPosts} />
+          {/* My Shows Section */}
+          <div className={styles.showsRow}>
+            <MyShowsSection />
           </div>
+
         </div>
       </div>
     </div>

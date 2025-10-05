@@ -76,8 +76,7 @@ const Sidebar = () => {
   const menuItems = [
     { path: '/home', icon: 'fas fa-home', label: 'Home' },
     { path: '/shows', icon: 'fas fa-tv', label: 'Shows' },
-    { path: '/myStuff', icon: 'fas fa-folder', label: 'My Stuff' },
-    { path: '/myShows', icon: 'fas fa-tv', label: 'My Shows' },
+    { path: '/mystuff', icon: 'fas fa-folder', label: 'My Stuff' },
     { path: '/explore-review', icon: 'fas fa-search', label: 'Explore Reviews' },
     { path: '/settings', icon: 'fas fa-cog', label: 'Settings' }
   ];

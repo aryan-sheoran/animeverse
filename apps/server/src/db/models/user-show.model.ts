@@ -6,11 +6,6 @@ const userShowSchema = new Schema(
 	{
 		userId: { type: String, ref: 'User', required: true, index: true },
 		showId: { type: Schema.Types.ObjectId, ref: 'Show', required: true, index: true },
-		status: { 
-			type: String, 
-			enum: ['watching', 'completed', 'plan-to-watch', 'on-hold', 'dropped'], 
-			default: 'watching' 
-		},
 		isFavorite: { type: Boolean, default: false },
 		currentEpisode: { type: Number, default: 0 },
 		currentSeason: { type: Number, default: 1 },
@@ -28,7 +23,6 @@ const userShowSchema = new Schema(
 
 // Compound unique index to prevent duplicates
 userShowSchema.index({ userId: 1, showId: 1 }, { unique: true });
-userShowSchema.index({ status: 1 });
 userShowSchema.index({ isFavorite: 1 });
 
 export const UserShow = mongoose.models.UserShow || model("UserShow", userShowSchema);

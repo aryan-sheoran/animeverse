@@ -7,14 +7,12 @@ const homeItemSchema = new Schema(
 		show: { type: Schema.Types.ObjectId, ref: 'Show', required: true },
 		section: { 
 			type: String, 
-			enum: ['hero', 'featured', 'popular', 'trending'], 
+			enum: ['hero', 'featured', 'popular'], 
 			required: true,
 			index: true 
 		},
 		order: { type: Number, default: 0 },
 		isActive: { type: Boolean, default: true },
-		startDate: { type: Date },
-		endDate: { type: Date },
 	},
 	{
 		timestamps: true,

@@ -30,21 +30,25 @@ export const showRouter = {
 				query.genres = { $in: genres };
 			}
 			
-			const sort: any = {};
-			if (sortBy === 'rating') sort.rating = -1;
-			else if (sortBy === 'title') sort.title = 1;
-			else sort.createdAt = -1;
-			
+		const sort: any = {};
+		if (sortBy === 'rating') sort.rating = -1;
+		else if (sortBy === 'title') sort.title = 1;
+		else sort.createdAt = -1;
+		
+		try {
 			const shows = await Show.find(query)
 				.sort(sort)
 				.limit(limit)
 				.skip(skip)
 				.lean();
 			
+			console.log(`✅ Router: Found ${shows.length} shows in database`);
 			return shows;
-		}),
-
-	// Get single show by ID
+		} catch (error) {
+			console.error('❌ Router: Error fetching shows:', error);
+			throw error;
+		}
+	}),	// Get single show by ID
 	getById: publicProcedure
 		.input(z.object({
 			id: z.string(),

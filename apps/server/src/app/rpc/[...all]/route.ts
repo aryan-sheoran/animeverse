@@ -1,3 +1,4 @@
+import "@/db"; // Ensure database connection is initialized
 import { createContext } from "@/lib/context";
 import { appRouter } from "@/routers";
 import { OpenAPIHandler } from "@orpc/openapi/fetch";

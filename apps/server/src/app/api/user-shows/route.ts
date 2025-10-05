@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import "@/db"; // Ensure database connection is initialized
 import { UserShow } from "@/db/models/user-show.model";
 import { auth } from "@/lib/auth";
 
@@ -78,7 +79,12 @@ export async function POST(request: NextRequest) {
 			startedAt: new Date(),
 		});
 		
-		return NextResponse.json(userShow, { status: 201 });
+		// Populate the show data before returning
+		const populatedUserShow = await UserShow.findById(userShow._id)
+			.populate('showId')
+			.lean();
+		
+		return NextResponse.json(populatedUserShow, { status: 201 });
 	} catch (error) {
 		console.error('Error creating user show:', error);
 		return NextResponse.json(

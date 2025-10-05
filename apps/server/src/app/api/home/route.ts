@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import "@/db"; // Ensure database connection is initialized
 import { HomeItem } from "@/db/models/home-item.model";
 
 export async function GET(request: NextRequest) {

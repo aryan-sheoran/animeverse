@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Poppins, Inter } from "next/font/google";
+import { Toaster } from "sonner";
+import { Providers } from "@/components/providers";
 import "../index.css";
 
 const geistSans = Geist({
@@ -48,8 +50,11 @@ export default function RootLayout({
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} ${inter.variable} antialiased`}
 			>
-				{children}
-				<div id="modal-root"></div>
+				<Providers>
+					{children}
+					<Toaster position="top-right" richColors />
+					<div id="modal-root"></div>
+				</Providers>
 			</body>
 		</html>
 	);

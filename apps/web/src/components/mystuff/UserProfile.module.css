@@ -100,13 +100,23 @@
 .favoriteAnime {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 10px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.favoriteAnime > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+  gap: 10px;
 }
 
 .favoriteAnimeIcon {
   margin-right: 10px;
   font-size: 20px;
+  flex-shrink: 0;
 }
 
 .glassCard {
@@ -196,6 +206,12 @@
 
   .favoriteAnime {
     padding: 8px 0;
+  }
+
+  .favoriteAnime > div {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
   }
 
   .favoriteAnimeIcon {

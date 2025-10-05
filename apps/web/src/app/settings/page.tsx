@@ -20,13 +20,38 @@ const Settings = () => {
 
   const handleProfileUpdate = async (profileData: any) => {
     try {
-      // TODO: Implement profile update with your backend
-      // For now, we'll simulate success
-      console.log('Profile data to update:', profileData);
-      return { success: true, message: 'Profile updated successfully!' };
-    } catch (error) {
+      // Import authClient dynamically to avoid SSR issues
+      const { authClient } = await import('@/lib/auth-client');
+      
+      console.log('Updating profile with data:', profileData);
+      
+      // Use better-auth's updateUser method with additional fields
+      const result = await authClient.updateUser({
+        name: profileData.username || user?.name,
+        // Cast to any to include additional fields
+        ...(profileData as any),
+      });
+      
+      console.log('Update result:', result);
+      
+      if (result.error) {
+        console.error('Update error:', result.error);
+        return { 
+          success: false, 
+          error: result.error.message || 'Failed to update profile' 
+        };
+      }
+      
+      return { 
+        success: true, 
+        message: 'Profile updated successfully!' 
+      };
+    } catch (error: any) {
       console.error('Profile update error:', error);
-      return { success: false, error: 'Failed to update profile. Please try again.' };
+      return { 
+        success: false, 
+        error: error?.message || 'Failed to update profile. Please try again.' 
+      };
     }
   };
 

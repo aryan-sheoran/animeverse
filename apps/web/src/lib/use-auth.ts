@@ -11,6 +11,11 @@ export interface User {
   image?: string;
   createdAt: Date;
   updatedAt: Date;
+  // Additional profile fields
+  username?: string;
+  bio?: string;
+  location?: string;
+  favoriteAnime?: string;
 }
 
 export interface Session {

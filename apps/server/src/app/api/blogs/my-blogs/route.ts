@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import "@/db"; // Ensure database connection is initialized
 import { Blog } from "@/db/models/blog.model";
 import { auth } from "@/lib/auth";
 

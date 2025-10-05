@@ -15,14 +15,14 @@ export const ratingRouter = {
 				throw new Error("Invalid show ID");
 			}
 			
-			const query: any = { showId: input.showId };
+			const query: any = { show: input.showId };
 			
 			if (input.seasonNumber !== undefined) {
 				query.seasonNumber = input.seasonNumber;
 			}
 			
 			const ratings = await SeasonRating.find(query)
-				.populate('userId', 'name email')
+				.populate('user', 'name email')
 				.sort({ createdAt: -1 })
 				.lean();
 			
@@ -40,8 +40,8 @@ export const ratingRouter = {
 			}
 			
 			const ratings = await SeasonRating.find({
-				userId: context.session?.user?.id,
-				showId: input.showId,
+				user: context.session?.user?.id,
+				show: input.showId,
 			})
 			.sort({ seasonNumber: 1 })
 			.lean();
@@ -54,8 +54,11 @@ export const ratingRouter = {
 		.input(z.object({
 			showId: z.string(),
 			seasonNumber: z.number().min(1),
+			seasonTitle: z.string(),
 			rating: z.number().min(0).max(5),
-			comment: z.string().optional(),
+			review: z.string().optional(),
+			episodesWatched: z.number().optional(),
+			totalEpisodes: z.number().optional(),
 		}))
 		.handler(async ({ input, context }) => {
 			if (!mongoose.Types.ObjectId.isValid(input.showId)) {
@@ -64,13 +67,16 @@ export const ratingRouter = {
 			
 			const rating = await SeasonRating.findOneAndUpdate(
 				{
-					userId: context.session?.user?.id,
-					showId: input.showId,
+					user: context.session?.user?.id,
+					show: input.showId,
 					seasonNumber: input.seasonNumber,
 				},
 				{
+					seasonTitle: input.seasonTitle,
 					rating: input.rating,
-					comment: input.comment,
+					review: input.review,
+					episodesWatched: input.episodesWatched,
+					totalEpisodes: input.totalEpisodes,
 				},
 				{
 					upsert: true,
@@ -94,8 +100,8 @@ export const ratingRouter = {
 			}
 			
 			const rating = await SeasonRating.findOneAndDelete({
-				userId: context.session?.user?.id,
-				showId: input.showId,
+				user: context.session?.user?.id,
+				show: input.showId,
 				seasonNumber: input.seasonNumber,
 			});
 			
@@ -118,7 +124,7 @@ export const ratingRouter = {
 			}
 			
 			const ratings = await SeasonRating.find({
-				showId: input.showId,
+				show: input.showId,
 				seasonNumber: input.seasonNumber,
 			}).lean();
 			

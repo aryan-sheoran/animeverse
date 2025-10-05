@@ -68,14 +68,50 @@ const Home = () => {
     return normalizeImage(img);
   };
 
-  // Fetch popular shows from backend
-  // Note: This requires REST API endpoints to be set up on the server
-  // The server should expose GET /api/shows and GET /api/home endpoints
+  // Fetch popular shows from backend (fallback if home_items doesn't have popular section)
+  // This will be overridden by home_items data if available
   useEffect(() => {
     let mounted = true;
     const fetchPopular = async () => {
       try {
         const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3001';
+        
+        // First try to get popular from home_items
+        const homeRes = await fetch(`${serverUrl}/api/home?section=popular`, {
+          credentials: 'include',
+        });
+        
+        if (homeRes.ok) {
+          const items: HomeItem[] = await homeRes.json();
+          if (Array.isArray(items) && items.length > 0) {
+            const mapped: PopularShowItem[] = items
+              .map((h) => {
+                if (!h || !h.show) return null;
+                const show = typeof h.show === 'object' ? h.show : null;
+                if (!show) return null;
+                
+                const image = pickImage(show);
+                if (!image) return null;
+                
+                return {
+                  id: h._id,
+                  showId: getShowId(show),
+                  image,
+                  title: show.title || 'Untitled',
+                  description: show.description || '',
+                  type: (show.genres && show.genres.length ? show.genres[0] : 'Unknown')
+                };
+              })
+              .filter((item): item is PopularShowItem => item !== null);
+            
+            if (mounted && mapped.length > 0) {
+              setPopularShows(mapped);
+              return; // Don't fetch from shows API if we got data from home_items
+            }
+          }
+        }
+        
+        // Fallback: fetch from regular shows API
         const res = await fetch(`${serverUrl}/api/shows`, {
           credentials: 'include',
         });
@@ -85,7 +121,14 @@ const Home = () => {
           return;
         }
         
-        const shows: Show[] = await res.json();
+        let shows: Show[] = await res.json();
+        
+        // Ensure shows is an array
+        if (!Array.isArray(shows)) {
+          console.warn('Shows API returned non-array data:', shows);
+          shows = [];
+        }
+        
         const mapped: PopularShowItem[] = shows.slice(0, 12).map((s) => ({
           id: s._id,
           showId: getShowId(s),
@@ -105,8 +148,7 @@ const Home = () => {
     return () => { mounted = false; };
   }, []);
 
-  // Fetch home items (hero & featured) from backend
-  // Note: This requires REST API endpoints to be set up on the server
+  // Fetch home items (hero & featured) from backend grouped by section
   useEffect(() => {
     let mounted = true;
     const fetchHome = async () => {
@@ -121,71 +163,60 @@ const Home = () => {
           return;
         }
         
-        let items: HomeItem[] = await res.json();
+        // API returns grouped data: { hero: [...], featured: [...], popular: [...] }
+        const grouped: Record<string, HomeItem[]> = await res.json();
+        
+        // Helper to map home items to display format
+        const mapItems = (items: HomeItem[]): MappedItem[] => {
+          if (!Array.isArray(items)) return [];
+          
+          return items
+            .map(h => {
+              if (!h || !h.show) return null;
+              const show = typeof h.show === 'object' ? h.show : null;
+              if (!show) return null;
+              
+              const image = pickImage(show);
+              if (!image) return null;
+              
+              return {
+                id: h._id,
+                homeId: h._id,
+                showId: getShowId(show),
+                title: show.title || 'Untitled',
+                description: show.description || '',
+                image,
+                genres: show.genres || []
+              };
+            })
+            .filter((item): item is MappedItem => item !== null);
+        };
 
-        // Collect show IDs needing population (when show is just a string/ObjectId)
-        const missingShowIds = items
-          .filter(h => h && h.show && typeof h.show === 'string')
-          .map(h => h.show as string)
-          .slice(0, 20); // cap to avoid over-fetching
-
-        let showCache: Record<string, Show> = {};
-        if (missingShowIds.length) {
-          await Promise.all(missingShowIds.map(async (id) => {
-            if (showCache[id]) return;
-            try {
-              const r = await fetch(`${serverUrl}/api/shows/${id}`, {
-                credentials: 'include',
-              });
-              if (r.ok) {
-                const data = await r.json();
-                if (data && data._id) showCache[id] = data;
-              }
-            } catch (e) {
-              // ignore individual failures
-            }
+        // Extract hero items
+        const heroItems = mapItems(grouped.hero || []);
+        
+        // Extract featured items
+        const featuredItems = mapItems(grouped.featured || []);
+        
+        // Extract popular items for the popular shows section
+        const popularItems = mapItems(grouped.popular || []);
+        
+        // Update popular shows if we have data from home_items
+        if (popularItems.length > 0 && mounted) {
+          const mappedPopular: PopularShowItem[] = popularItems.map((item) => ({
+            id: item.id,
+            showId: item.showId,
+            image: item.image,
+            title: item.title,
+            description: item.description,
+            type: (item.genres && item.genres.length ? item.genres[0] : 'Unknown')
           }));
+          setPopularShows(mappedPopular);
         }
 
-        let mapped = items.map(h => {
-          if (!h) return null;
-          const show = typeof h.show === 'object' ? h.show : showCache[h.show as string];
-          if (!show) return null;
-          const image = pickImage(show);
-          if (!image) return null;
-          return {
-            id: h._id,
-            homeId: h._id,
-            showId: getShowId(show),
-            title: show.title || 'Untitled',
-            description: show.description || '',
-            image,
-            genres: show.genres || []
-          };
-        }).filter((item): item is MappedItem => item !== null);
-
-        // Fallback: if no curated home items, use empty arrays
-        if (!mapped.length) {
-          if (mounted) {
-            setHeroData([]);
-            setFeaturedAnimes([]);
-          }
-          return; 
-        }
-
-        const hero = mapped.slice(0, 4).filter((item): item is MappedItem => item !== null);
-        let featured = mapped.slice(4, 12).filter((item): item is MappedItem => item !== null);
-        if (featured.length < 4) {
-          let i = 0;
-          while (featured.length < 4 && hero.length) {
-            featured.push(hero[i % hero.length]);
-            i++;
-            if (i > 20) break;
-          }
-        }
         if (mounted) {
-          setHeroData(hero);
-          setFeaturedAnimes(featured);
+          setHeroData(heroItems);
+          setFeaturedAnimes(featuredItems);
         }
       } catch (err) {
         console.error('Failed to fetch home items:', err);

@@ -41,14 +41,16 @@ const ExploreReview = () => {
         const showsResponse = await fetch('/api/shows');
         const showsData = await showsResponse.json();
 
-        // Format basic show data
-        const formattedShows = showsData.map((show: any) => ({
-          ...show,
-          id: show._id,
-          image: getImageSrc(show),
-          category: show.genre && show.genre.length > 0 ? show.genre[0].toLowerCase() : 'action',
-          rating: show.rating ?? null
-        }));
+        // Format basic show data - only include shows with valid images
+        const formattedShows = showsData
+          .filter((show: any) => show.imageUrl) // Only shows with images
+          .map((show: any) => ({
+            ...show,
+            id: show._id,
+            image: show.imageUrl,
+            category: show.genres && show.genres.length > 0 ? show.genres[0].toLowerCase() : 'action',
+            rating: show.rating ?? null
+          }));
 
         // For each show, fetch reviews and season ratings to compute average rating
         const showsWithRatings = await Promise.all(formattedShows.map(async (s: Show) => {
@@ -123,16 +125,6 @@ const ExploreReview = () => {
     filterAndSearchShows();
   }, [shows, activeFilter, searchQuery]);
 
-  const getImageSrc = (show: any) => {
-    if (show.image) {
-      if (show.image.startsWith('http')) {
-        return show.image;
-      }
-      return `/assets/card-images/${show.image}`;
-    }
-    return '/assets/card-images/logo.png';
-  };
-
   const filterAndSearchShows = () => {
     let filtered = shows;
 
@@ -158,9 +150,7 @@ const ExploreReview = () => {
   };
 
   const handleImageClick = (imageSrc: string, title: string, showId: string) => {
-    const imageParam = encodeURIComponent(imageSrc);
-    const titleParam = encodeURIComponent(title);
-    router.push(`/review?showId=${showId}&image=${imageParam}&title=${titleParam}`);
+    router.push(`/anime-reviews?showId=${showId}`);
   };
 
   if (loading) {

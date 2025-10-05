@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import "@/db"; // Ensure database connection is initialized
 import { SeasonRating } from "@/db/models/season-rating.model";
 import mongoose from "mongoose";
 
@@ -19,14 +20,14 @@ export async function GET(
 		const { searchParams } = new URL(request.url);
 		const seasonNumber = searchParams.get('seasonNumber');
 		
-		const query: any = { showId };
+		const query: any = { show: showId };
 		
 		if (seasonNumber) {
 			query.seasonNumber = parseInt(seasonNumber);
 		}
 		
 		const ratings = await SeasonRating.find(query)
-			.populate('userId', 'name email')
+			.populate('user', 'name email')
 			.sort({ createdAt: -1 })
 			.lean();
 		

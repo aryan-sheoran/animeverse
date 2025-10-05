@@ -2,106 +2,165 @@
 
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import styles from "./hub.module.css";
 
-export default function HomePage() {
+export default function HubPage() {
 	const router = useRouter();
+	const [mounted, setMounted] = useState(false);
+
+	useEffect(() => {
+		setMounted(true);
+	}, []);
 
 	const handleLogout = async () => {
 		await authClient.signOut();
 		router.push("/login");
 	};
 
+	const handleAnimeDBClick = () => {
+		router.push("/home");
+	};
+
 	return (
-		<div className="min-h-screen bg-[#0f1729] relative">
-			{/* Background decorative circles */}
-			<div className="absolute inset-0 overflow-hidden pointer-events-none">
-				<div className="absolute top-20 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
-				<div className="absolute bottom-20 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
+		<div className={styles.hubRoot}>
+			{/* Animated Background */}
+			<div className={styles.animatedBackground}>
+				<div className={styles.starField}></div>
+				<div className={`${styles.glowOrb} ${styles.orb1}`}></div>
+				<div className={`${styles.glowOrb} ${styles.orb2}`}></div>
+				<div className={`${styles.glowOrb} ${styles.orb3}`}></div>
 			</div>
 
-			{/* Navbar */}
-			<nav className="relative bg-[#1a2332]/80 backdrop-blur-xl border-b border-white/5 shadow-lg">
-				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-					<div className="flex justify-between items-center h-16">
-						<h1 className="text-2xl font-bold text-white tracking-wide">
-							Welcome to Your Animeverse
-						</h1>
-						<button
-							onClick={handleLogout}
-							className="px-6 py-2 bg-red-600/90 hover:bg-red-600 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-red-500/30 backdrop-blur-sm"
-						>
-							Logout
-						</button>
+			{/* Header */}
+			<header className={styles.header}>
+				<div className={styles.headerContent}>
+					<div className={styles.logo}>
+						<div className={styles.logoText}>
+							<h1>Animeverse</h1>
+							<p>Where Fandom Becomes Universe</p>
+						</div>
 					</div>
+					<button onClick={handleLogout} className={styles.logoutBtn}>
+						<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+						</svg>
+						Logout
+					</button>
 				</div>
-			</nav>
+			</header>
 
-			{/* Content */}
-			<div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-					{/* Card 1: AnimeDB */}
-					<div className="group bg-[#1e2939]/60 backdrop-blur-xl rounded-2xl overflow-hidden border border-white/10 shadow-xl hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 hover:scale-[1.02] hover:border-blue-400/30">
-						<div className="relative h-64 overflow-hidden">
-							<img
-								src="/assets/Home-image/Zom100.png"
-								alt="AnimeDB"
-								className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+			{/* Hero Section */}
+			<section className={styles.heroSection}>
+				<h2 className={styles.heroTitle}>
+					Welcome to the Multiverse
+				</h2>
+				<p className={styles.heroSubtitle}>
+					💫 From exploring your favorite anime worlds to shaping your own — Animeverse is your gateway to infinite possibilities.
+				</p>
+			</section>
+
+			{/* Portal Animation */}
+			<section className={styles.portalSection}>
+				<h3 className={styles.portalText}>✨ Enter the Hub — your Central Dungeon of Dreams.</h3>
+				<p className={styles.portalSubtext}>
+					A living nexus forged from pure imagination, where every portal opens to a new universe waiting to be explored.
+					<br />
+					Step through glowing gateways, feel the pulse of countless worlds, and choose your next adventure.
+				</p>
+			</section>
+
+			{/* Feature Hub */}
+			<section className={styles.featureHub}>
+				<h2 className={styles.hubTitle}>Here, every portal leads somewhere extraordinary:</h2>
+
+				<div className={styles.featureGrid}>
+					{/* AnimeDB Card */}
+					<div 
+						className={`${styles.featureCard} ${styles.available}`}
+						onClick={handleAnimeDBClick}
+					>
+						<div className={styles.cardImageContainer}>
+							<img 
+								src="/assets/Home-image/Zom100.png" 
+								alt="AnimeDB" 
+								className={styles.cardImage}
 							/>
-							<div className="absolute inset-0 bg-gradient-to-t from-[#1e2939] via-[#1e2939]/50 to-transparent"></div>
+							<div className={styles.cardOverlay}>
+								<div className={`${styles.featureIcon} ${styles.iconAnimeDB}`}>
+									🎥
+								</div>
+							</div>
 						</div>
-						<div className="p-8 text-center">
-							<h2 className="text-3xl font-bold text-white mb-3 group-hover:text-blue-300 transition-colors duration-300">
-								AnimeDB
-							</h2>
-							<p className="text-gray-400 text-sm leading-relaxed">
-								Explore your anime database and discover new favorites
+						<div className={styles.cardContent}>
+							<h3 className={styles.featureTitle}>AnimeDB</h3>
+							<p className={styles.featureDescription}>
+								Discover, rate, and review anime like never before — your personalized universe of opinions and discoveries.
 							</p>
+							<button className={styles.exploreBtn}>
+								Explore Now
+								<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+								</svg>
+							</button>
 						</div>
 					</div>
 
-					{/* Card 2: More Features Coming Soon with fading image */}
-					<div className="group bg-[#1e2939]/60 backdrop-blur-xl rounded-2xl overflow-hidden border border-white/10 shadow-xl hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-300 hover:scale-[1.02] hover:border-purple-400/30 relative">
-						<div className="relative h-full min-h-[400px]">
-							{/* Background image with gradient fade from top to bottom */}
-							<div className="absolute inset-0">
-								<img
-									src="/assets/Home-image/AOT.jpg"
-									alt="Coming Soon"
-									className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-								/>
-								{/* Gradient overlay that fades the image from visible at top to invisible at bottom */}
-								<div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#1e2939]/70 to-[#1e2939]"></div>
-							</div>
-							{/* Content overlay */}
-							<div className="relative p-8 text-center flex flex-col justify-end h-full">
-								<div className="mb-6">
-									<div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl mx-auto flex items-center justify-center shadow-lg shadow-purple-500/30 group-hover:shadow-purple-500/50 transition-all duration-300">
-										<svg
-											className="w-10 h-10 text-white"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M12 4v16m8-8H4"
-											/>
-										</svg>
-									</div>
+					{/* Community Card */}
+					<div className={`${styles.featureCard} ${styles.comingSoon}`}>
+						<div className={styles.cardImageContainer}>
+							<img 
+								src="/assets/Home-image/AOT.jpg" 
+								alt="Community" 
+								className={styles.cardImage}
+							/>
+							<div className={styles.cardOverlay}>
+								<div className={`${styles.featureIcon} ${styles.iconCommunity}`}>
+									💬
 								</div>
-								<h2 className="text-3xl font-bold text-white mb-3 group-hover:text-purple-300 transition-colors duration-300">
-									More Features Coming Soon
-								</h2>
-								<p className="text-gray-400 text-sm leading-relaxed">
-									Stay tuned for exciting new updates and features
-								</p>
 							</div>
+						</div>
+						<div className={styles.cardContent}>
+							<h3 className={styles.featureTitle}>Community</h3>
+							<p className={styles.featureDescription}>
+								Forge bonds, share stories, and grow with fellow fans across worlds.
+							</p>
+							<span className={styles.comingSoonBadge}>Coming Soon</span>
+						</div>
+					</div>
+
+					{/* Otaku Date Card */}
+					<div className={`${styles.featureCard} ${styles.comingSoon}`}>
+						<div className={styles.cardImageContainer}>
+							<img 
+								src="/assets/Home-image/lovingYamada.jpg" 
+								alt="Otaku Date" 
+								className={styles.cardImage}
+							/>
+							<div className={styles.cardOverlay}>
+								<div className={`${styles.featureIcon} ${styles.iconDating}`}>
+									💞
+								</div>
+							</div>
+						</div>
+						<div className={styles.cardContent}>
+							<h3 className={styles.featureTitle}>Otaku Date</h3>
+							<p className={styles.featureDescription}>
+								Connect with those who share your spark — love, friendship, or adventure among the stars.
+							</p>
+							<span className={styles.comingSoonBadge}>Coming Soon</span>
 						</div>
 					</div>
 				</div>
-			</div>
+
+				<div style={{ textAlign: 'center', marginTop: '4rem', fontSize: '1.125rem', color: 'rgba(255, 255, 255, 0.6)', lineHeight: '1.8' }}>
+					<p style={{ marginBottom: '1rem' }}>🚪 Every click is a portal.</p>
+					<p style={{ marginBottom: '1rem' }}>🌌 Every world is alive.</p>
+					<p style={{ fontWeight: 700, fontSize: '1.25rem', background: 'linear-gradient(90deg, #8a2be2, #2575fc)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginTop: '1.5rem' }}>
+						🔥 Welcome to the Hub — welcome to Animeverse, where your fandom becomes a universe.
+					</p>
+				</div>
+			</section>
 		</div>
 	);
 }

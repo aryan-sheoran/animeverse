@@ -8,6 +8,30 @@ export const auth = betterAuth<BetterAuthOptions>({
 	emailAndPassword: {
 		enabled: true,
 	},
+	user: {
+		additionalFields: {
+			username: {
+				type: "string",
+				required: false,
+				input: true,
+			},
+			bio: {
+				type: "string",
+				required: false,
+				input: true,
+			},
+			location: {
+				type: "string",
+				required: false,
+				input: true,
+			},
+			favoriteAnime: {
+				type: "string",
+				required: false,
+				input: true,
+			},
+		},
+	},
 	advanced: {
 		defaultCookieAttributes: {
 			sameSite: "none",

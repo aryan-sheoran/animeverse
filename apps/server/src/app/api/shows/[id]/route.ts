@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import "@/db"; // Ensure database connection is initialized
 import { Show } from "@/db/models/show.model";
 import mongoose from "mongoose";
 

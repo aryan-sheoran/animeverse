@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import styles from './ShowCard.module.css';
 import ShowSeasonRatings from './ShowSeasonRatings';
 
@@ -8,7 +8,10 @@ interface Show {
   _id: string;
   title: string;
   image: string;
+  imageUrl?: string;
+  coverImageUrl?: string;
   genre?: string[];
+  genres?: string[];
   rating: number;
 }
 
@@ -27,27 +30,23 @@ interface ShowCardProps {
 
 const ShowCard: React.FC<ShowCardProps> = ({ userShow, onDelete, onToggleFavorite, onImageClick }) => {
   const { showId: show } = userShow;
-  const [isFavorite, setIsFavorite] = useState(userShow.isFavorite);
 
   if (!show) {
     return null;
   }
 
   const getImageSrc = (show: Show) => {
+    // Use the image property directly from the show data
+    // It should already have the correct URL from the API
     if (show.image) {
       if (show.image.startsWith('http')) {
         return show.image;
       }
-      return `/assets/card-images/${show.image}`;
+      // Return as is if it's a relative path
+      return show.image;
     }
-    return '/assets/card-images/logo.png';
-  };
-
-  const handleFavoriteClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const newFavoriteStatus = !isFavorite;
-    setIsFavorite(newFavoriteStatus);
-    onToggleFavorite(newFavoriteStatus);
+    // Return empty string if no image - don't use default logo
+    return '';
   };
 
   const handleDeleteClick = (e: React.MouseEvent) => {
@@ -65,37 +64,37 @@ const ShowCard: React.FC<ShowCardProps> = ({ userShow, onDelete, onToggleFavorit
     }
   };
 
+  const imageSrc = getImageSrc(show);
+  
   return (
     <div 
       className={styles.showCard} 
       style={{ cursor: 'pointer' }}
     >
       <div className={styles.showImage} onClick={onImageClick}>
-        <img src={getImageSrc(show)} alt={show.title} />
-
-        <button 
-          className={`${styles.favoriteBtn} ${isFavorite ? styles.active : ''}`}
-          onClick={handleFavoriteClick}
-        >
-          <i className={isFavorite ? "fas fa-heart" : "far fa-heart"}></i>
-        </button>
+        {imageSrc ? (
+          <img 
+            src={imageSrc} 
+            alt={show.title}
+            onError={(e) => {
+              // Hide image if it fails to load
+              e.currentTarget.style.display = 'none';
+            }}
+          />
+        ) : (
+          <div className={styles.noImagePlaceholder}>
+            <span>No Image</span>
+          </div>
+        )}
       </div>
 
       <div className={styles.showInfo}>
         <h3 className={styles.showTitle}>{show.title}</h3>
-        <p className={styles.showGenre}>{Array.isArray(show.genre) ? show.genre.join(', ') : show.genre}</p>
-        
-        <div className={styles.showRating}>
-          <div className={styles.stars}>
-            {[...Array(5)].map((_, i) => (
-              <i 
-                key={i} 
-                className={`fas fa-star ${i < Math.floor(show.rating) ? styles.filled : ''}`}
-              ></i>
-            ))}
-          </div>
-          <span className={styles.ratingValue}>{show.rating}</span>
-        </div>
+        <p className={styles.showGenre}>
+          {Array.isArray(show.genre) ? show.genre.join(', ') : 
+           Array.isArray(show.genres) ? show.genres.join(', ') : 
+           show.genre || show.genres || 'Unknown'}
+        </p>
 
         <div className={styles.cardActions}>
           <button 
