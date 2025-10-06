@@ -9,12 +9,10 @@ import styles from './MyShowsSection.module.css';
 interface Show {
   _id: string;
   title: string;
-  image: string;
   imageUrl?: string;
   coverImageUrl?: string;
-  genre?: string[];
   genres?: string[];
-  rating: number;
+  rating?: number;
 }
 
 interface UserShow {
@@ -64,17 +62,17 @@ const MyShowsSection: React.FC = () => {
     }
   };
 
-  const handleDelete = async (userShowId: string) => {
+  const handleDelete = async (userShowId: string, actualShowId: string) => {
     // Confirmation dialog
     if (!confirm('Are you sure you want to remove this show from your list?')) {
       return;
     }
 
     try {
-      // Use RPC to remove show
-      await client.userShows.removeShow({ showId: userShowId });
+      // Use RPC to remove show - pass the actual show ID, not the userShow ID
+      await client.userShows.removeShow({ showId: actualShowId });
 
-      // Remove from local state on success
+      // Remove from local state on success using userShow ID
       setShows(shows.filter(show => show._id !== userShowId));
     } catch (error) {
       console.error('Failed to delete show:', error);
@@ -101,13 +99,10 @@ const MyShowsSection: React.FC = () => {
   };
 
   const getImageSrc = (show: Show) => {
-    // Priority: imageUrl, coverImageUrl, then image
-    const image = show.imageUrl || show.coverImageUrl || show.image;
+    // Priority: imageUrl, then coverImageUrl
+    const image = show.imageUrl || show.coverImageUrl;
     if (image) {
-      if (image.startsWith('http')) {
-        return image;
-      }
-      // If it's a relative path, return as is (assuming it's already correct)
+      // Image URLs should already be complete from the API
       return image;
     }
     // Return empty string if no image - don't use default
@@ -120,11 +115,9 @@ const MyShowsSection: React.FC = () => {
     const imageParam = encodeURIComponent(imageSrc);
     const titleParam = encodeURIComponent(show.title);
     const genreParam = encodeURIComponent(
-      (show.genre && show.genre.length > 0) 
-        ? show.genre[0] 
-        : (show.genres && show.genres.length > 0) 
-          ? show.genres[0] 
-          : 'Unknown'
+      (show.genres && show.genres.length > 0) 
+        ? show.genres[0] 
+        : 'Unknown'
     );
     const showIdParam = show._id;
 
@@ -167,7 +160,7 @@ const MyShowsSection: React.FC = () => {
             <ShowCard
               key={userShow._id}
               userShow={userShow}
-              onDelete={() => handleDelete(userShow._id)}
+              onDelete={() => handleDelete(userShow._id, userShow.showId._id)}
               onToggleFavorite={(isFavorite) => handleToggleFavorite(userShow._id, isFavorite)}
               onImageClick={() => handleImageClick(userShow)}
             />

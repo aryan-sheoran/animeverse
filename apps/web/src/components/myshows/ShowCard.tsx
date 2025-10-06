@@ -7,12 +7,10 @@ import ShowSeasonRatings from './ShowSeasonRatings';
 interface Show {
   _id: string;
   title: string;
-  image: string;
   imageUrl?: string;
   coverImageUrl?: string;
-  genre?: string[];
   genres?: string[];
-  rating: number;
+  rating?: number;
 }
 
 interface UserShow {
@@ -36,14 +34,12 @@ const ShowCard: React.FC<ShowCardProps> = ({ userShow, onDelete, onToggleFavorit
   }
 
   const getImageSrc = (show: Show) => {
-    // Use the image property directly from the show data
-    // It should already have the correct URL from the API
-    if (show.image) {
-      if (show.image.startsWith('http')) {
-        return show.image;
-      }
-      // Return as is if it's a relative path
-      return show.image;
+    // Use imageUrl or coverImageUrl from the show data
+    // Priority: imageUrl, then coverImageUrl
+    const image = show.imageUrl || show.coverImageUrl;
+    if (image) {
+      // Image URLs should already be complete from the API
+      return image;
     }
     // Return empty string if no image - don't use default logo
     return '';
@@ -91,9 +87,7 @@ const ShowCard: React.FC<ShowCardProps> = ({ userShow, onDelete, onToggleFavorit
       <div className={styles.showInfo}>
         <h3 className={styles.showTitle}>{show.title}</h3>
         <p className={styles.showGenre}>
-          {Array.isArray(show.genre) ? show.genre.join(', ') : 
-           Array.isArray(show.genres) ? show.genres.join(', ') : 
-           show.genre || show.genres || 'Unknown'}
+          {Array.isArray(show.genres) && show.genres.length > 0 ? show.genres.join(', ') : 'Unknown'}
         </p>
 
         <div className={styles.cardActions}>
