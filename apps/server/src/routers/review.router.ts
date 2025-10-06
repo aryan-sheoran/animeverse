@@ -50,7 +50,8 @@ export const reviewRouter = {
 				console.error('❌ Error fetching reviews:', error);
 				console.error('❌ Error message:', error?.message);
 				console.error('❌ Error stack:', error?.stack);
-				throw new Error(`Failed to fetch reviews: ${error?.message || 'Unknown error'}`);
+				// Re-throw the original error to preserve the stack trace
+				throw error;
 			}
 		}),
 
