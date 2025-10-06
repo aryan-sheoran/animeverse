@@ -60,7 +60,9 @@ const AnimeReviewsContent = () => {
         setShowId(paramShowId);
         console.log('🔍 Loading reviews for show ID:', paramShowId);
         console.log('🔍 Show ID type:', typeof paramShowId);
-        console.log('🔍 Show ID value:', JSON.stringify(paramShowId));
+        console.log('🔍 Show ID length:', paramShowId.length);
+        console.log('🔍 Show ID value (JSON):', JSON.stringify(paramShowId));
+        console.log('🔍 Show ID value (raw):', paramShowId);
 
         // Fetch anime details and reviews in parallel using RPC
         console.log('📡 Fetching show and reviews via RPC');

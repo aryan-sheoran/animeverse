@@ -2,6 +2,7 @@ import { z } from "zod";
 import { protectedProcedure, publicProcedure } from "../lib/orpc";
 import { Review } from "../db/models/review.model";
 import { Show } from "../db/models/show.model";
+import { User } from "../db/models/auth.model";
 import mongoose from "mongoose";
 import { connectDB } from "../db";
 
@@ -27,16 +28,35 @@ export const reviewRouter = {
 				const allReviews = await Review.find({}).limit(5).lean();
 				console.log('🔍 Sample of all reviews in DB:', allReviews.length > 0 ? allReviews.map((r: any) => ({ _id: r._id, animeId: r.animeId, animeTitle: r.animeTitle })) : 'No reviews in database');
 				
+				// Fetch reviews without populate first to avoid type mismatch issues
 				const reviews = await Review.find({ animeId: input.animeId })
 					.sort({ createdAt: -1 })
 					.limit(input.limit)
 					.skip(input.skip)
-					.populate('user', 'name email')
 					.lean();
 				
-				console.log('✅ Found reviews for animeId', input.animeId, ':', reviews.length);
-				if (reviews.length > 0) {
-					console.log('✅ First review sample:', JSON.stringify(reviews[0], null, 2));
+				// Manually populate user data to handle both ObjectId and String user IDs
+				const reviewsWithUsers = await Promise.all(
+					reviews.map(async (review: any) => {
+						try {
+							const user = await User.findById(review.user).select('name email').lean();
+							return {
+								...review,
+								user: user || { name: 'Unknown User', email: '' }
+							};
+						} catch (error) {
+							console.error('Error populating user for review:', review._id, error);
+							return {
+								...review,
+								user: { name: 'Unknown User', email: '' }
+							};
+						}
+					})
+				);
+				
+				console.log('✅ Found reviews for animeId', input.animeId, ':', reviewsWithUsers.length);
+				if (reviewsWithUsers.length > 0) {
+					console.log('✅ First review sample:', JSON.stringify(reviewsWithUsers[0], null, 2));
 				} else {
 					console.log('⚠️ No reviews found. Checking if animeId exists in any review...');
 					const anyReviewWithThisId = await Review.findOne({}).lean();
@@ -45,7 +65,7 @@ export const reviewRouter = {
 						console.log('⚠️ Requested animeId format:', input.animeId, 'Type:', typeof input.animeId);
 					}
 				}
-				return reviews;
+				return reviewsWithUsers;
 			} catch (error: any) {
 				console.error('❌ Error fetching reviews:', error);
 				console.error('❌ Error message:', error?.message);
