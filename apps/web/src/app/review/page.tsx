@@ -211,6 +211,12 @@ const ReviewContent = () => {
       return;
     }
 
+    // Validate that both season and episode are selected together (or neither)
+    if ((selectedSeason && !selectedEpisode) || (!selectedSeason && selectedEpisode)) {
+      toast.error('Please select both season and episode, or leave both empty for a general review.');
+      return;
+    }
+
     // Check if user already reviewed this episode
     if (selectedEpisode) {
       const existingEpisodeReview = myReviews.find(

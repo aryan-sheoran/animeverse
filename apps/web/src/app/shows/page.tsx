@@ -159,7 +159,7 @@ const Shows = () => {
         <div className={styles.mainContent}>
           <div className={styles.loading}>
             <i className="fas fa-spinner fa-spin"></i>
-            <span style={{ marginLeft: '10px' }}>Loading shows from database...</span>
+            <span style={{ marginLeft: '10px' }}>Loading shows...</span>
           </div>
         </div>
       </div>
