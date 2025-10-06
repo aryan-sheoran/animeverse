@@ -80,7 +80,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({ blogPosts, onUpdate }) => {
 
   return (
     <div className={`${styles.blogSection} ${styles.glassCard}`}>
-      <h3>My Blog</h3>
+      <h3 className={styles.sectionHeading}>My Blog</h3>
       <button
         className={`${styles.newBlogButton} ${styles.btn} ${styles.btnPrimary}`}
         onClick={handleNewBlogPost}

@@ -22,7 +22,7 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews }) => {
 
   return (
     <div className={`${styles.reviewsInfo} ${styles.glassCard}`}>
-      <h3>Reviews ({totalReviews})</h3>
+      <h3 className={styles.sectionHeading}>Reviews ({totalReviews})</h3>
       
       <div className={styles.statCard}>
         <div className={styles.statIcon}>📊</div>

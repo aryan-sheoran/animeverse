@@ -1,20 +1,4 @@
-/* Glassmorphism Base Styles */
-:root {
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  --glass-blur: blur(10px);
-  --gradient-primary: linear-gradient(
-    45deg,
-    rgba(106, 17, 203, 0.4),
-    rgba(37, 117, 252, 0.4)
-  );
-  --primary-color: #8a2be2;
-  --secondary-color: #2575fc;
-  --text-color: #e6edf3;
-  --text-muted: rgba(201, 209, 217, 0.8);
-  --border-color: rgba(255, 255, 255, 0.1);
-}
+/* Glassmorphism Base Styles - CSS variables moved to global CSS */
 
 .settingsRoot {
   display: flex;

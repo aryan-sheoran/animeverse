@@ -1,21 +1,4 @@
-/* Root Variables */
-:root {
-  --bg-intro: linear-gradient(135deg, #1a1314 0%, #3f1b1b 100%);
-  --gradient-primary: linear-gradient(45deg, #800020, #b22222);
-  --gradient-secondary: linear-gradient(45deg, #b22222, #dc143c);
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-bg-strong: rgba(255, 255, 255, 0.08);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-border-strong: rgba(255, 255, 255, 0.15);
-  --glass-blur: blur(10px);
-  --glass-blur-light: blur(5px);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  --glass-shadow-strong: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-  --primary-color: #dc143c;
-  --accent-color: #ff4d6d;
-  --text-light: #e0e0e0;
-  --text-muted: #b0b0b0;
-}
+/* Root Variables moved to global CSS */
 
 .introRoot {
   min-height: 100vh;
