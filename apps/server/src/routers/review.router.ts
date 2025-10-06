@@ -23,6 +23,10 @@ export const reviewRouter = {
 				console.log('🔍 MongoDB connection state:', mongoose.connection.readyState);
 				console.log('🔍 Review model:', Review ? 'Available' : 'Not available');
 				
+				// Debug: Check all reviews in the database
+				const allReviews = await Review.find({}).limit(5).lean();
+				console.log('🔍 Sample of all reviews in DB:', allReviews.length > 0 ? allReviews.map((r: any) => ({ _id: r._id, animeId: r.animeId, animeTitle: r.animeTitle })) : 'No reviews in database');
+				
 				const reviews = await Review.find({ animeId: input.animeId })
 					.sort({ createdAt: -1 })
 					.limit(input.limit)
@@ -30,9 +34,16 @@ export const reviewRouter = {
 					.populate('user', 'name email')
 					.lean();
 				
-				console.log('✅ Found reviews:', reviews.length);
+				console.log('✅ Found reviews for animeId', input.animeId, ':', reviews.length);
 				if (reviews.length > 0) {
 					console.log('✅ First review sample:', JSON.stringify(reviews[0], null, 2));
+				} else {
+					console.log('⚠️ No reviews found. Checking if animeId exists in any review...');
+					const anyReviewWithThisId = await Review.findOne({}).lean();
+					if (anyReviewWithThisId) {
+						console.log('⚠️ Sample review animeId format:', (anyReviewWithThisId as any).animeId, 'Type:', typeof (anyReviewWithThisId as any).animeId);
+						console.log('⚠️ Requested animeId format:', input.animeId, 'Type:', typeof input.animeId);
+					}
 				}
 				return reviews;
 			} catch (error: any) {

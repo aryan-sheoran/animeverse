@@ -307,7 +307,7 @@ const AnimeReviewsContent = () => {
                 </div>
               ))}
             </div>
-          ) : !loading ? (
+          ) : !loading && reviews && reviews.length === 0 ? (
             <div className={styles.noReviews}>
               <i className="fas fa-comment-slash"></i>
               <h3>No reviews yet</h3>
@@ -316,6 +316,9 @@ const AnimeReviewsContent = () => {
                 <div style={{ marginTop: '15px', fontSize: '0.85rem', opacity: 0.6 }}>
                   <p>Show ID: {showId}</p>
                   <p>Looking for reviews with animeId matching this show's ID</p>
+                  <p style={{ marginTop: '8px', fontSize: '0.8rem', color: '#ffaa00' }}>
+                    Debug: Check browser console for detailed logs
+                  </p>
                 </div>
               )}
             </div>
