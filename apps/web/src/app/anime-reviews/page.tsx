@@ -104,6 +104,8 @@ const AnimeReviewsContent = () => {
         console.log('📊 Number of reviews:', Array.isArray(reviewsData) ? reviewsData.length : 0);
         if (Array.isArray(reviewsData) && reviewsData.length > 0) {
           console.log('📝 First review:', JSON.stringify(reviewsData[0], null, 2));
+          console.log('👤 First review user object:', reviewsData[0].user);
+          console.log('👤 User name:', reviewsData[0].user?.name);
         }
         
         // Ensure we have an array and set reviews

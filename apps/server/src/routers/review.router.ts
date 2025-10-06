@@ -50,9 +50,27 @@ export const reviewRouter = {
 							const userId = review.user.toString ? review.user.toString() : review.user;
 							console.log('👤 Converted userId:', userId, 'Type:', typeof userId);
 							
-							// Use findOne with _id since User model has String _id
-							const user = await User.findOne({ _id: userId }).select('name email').lean() as any;
+							// Check if user exists in database - try both methods
+							let user = await User.findOne({ _id: userId }).select('name email').lean() as any;
+							
+							// If not found, also try findById in case the _id is actually stored as ObjectId
+							if (!user) {
+								console.log('👤 User not found with findOne, trying findById...');
+								try {
+									user = await User.findById(userId).select('name email').lean() as any;
+								} catch (e) {
+									console.log('👤 findById also failed');
+								}
+							}
+							
 							console.log('👤 Found user:', user ? (user as any).name : 'Not found');
+							
+							// If still no user, let's check what users exist
+							if (!user) {
+								const sampleUser = await User.findOne({}).select('_id name').lean();
+								console.log('👤 Sample user from database:', sampleUser);
+								console.log('👤 Sample user _id type:', typeof (sampleUser as any)?._id);
+							}
 							
 							return {
 								...review,
