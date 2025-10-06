@@ -11,7 +11,9 @@ import { NextRequest } from "next/server";
 const rpcHandler = new RPCHandler(appRouter, {
 	interceptors: [
 		onError((error) => {
-			console.error(error);
+			console.error('🔴 RPC Error:', error);
+			console.error('🔴 Error stack:', error instanceof Error ? error.stack : undefined);
+			console.error('🔴 Error details:', JSON.stringify(error, null, 2));
 		}),
 	],
 });
