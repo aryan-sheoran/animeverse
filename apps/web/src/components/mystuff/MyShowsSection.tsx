@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ShowCard from '@/components/myshows/ShowCard';
+import { client } from '@/utils/orpc';
 import styles from './MyShowsSection.module.css';
 
 interface Show {
@@ -33,17 +34,8 @@ const MyShowsSection: React.FC = () => {
 
   const fetchShows = async () => {
     try {
-      const response = await fetch('/api/user-shows', {
-        credentials: 'include',
-      });
-      
-      if (!response.ok) {
-        console.warn('User shows API not available yet');
-        setShows([]);
-        return;
-      }
-      
-      let data = await response.json();
+      // Use RPC to get user shows
+      let data = await client.userShows.getMyShows({}) as any;
       
       // Ensure data is an array
       if (!Array.isArray(data)) {
@@ -53,7 +45,7 @@ const MyShowsSection: React.FC = () => {
       
       // Debug: Log the show data to see what images we're getting
       console.log('User shows data:', data);
-      data.forEach((userShow: UserShow, index: number) => {
+      data.forEach((userShow: any, index: number) => {
         if (userShow.showId) {
           console.log(`Show ${index} - ${userShow.showId.title}:`, {
             image: userShow.showId.image,
@@ -79,15 +71,8 @@ const MyShowsSection: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`/api/user-shows/${userShowId}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-        throw new Error(errorData.error || 'Failed to delete show');
-      }
+      // Use RPC to remove show
+      await client.userShows.removeShow({ showId: userShowId });
 
       // Remove from local state on success
       setShows(shows.filter(show => show._id !== userShowId));
@@ -99,19 +84,11 @@ const MyShowsSection: React.FC = () => {
 
   const handleToggleFavorite = async (userShowId: string, isFavorite: boolean) => {
     try {
-      const response = await fetch(`/api/user-shows/${userShowId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ isFavorite }),
+      // Use RPC to update favorite status
+      await client.userShows.updateShow({ 
+        showId: userShowId, 
+        isFavorite 
       });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-        throw new Error(errorData.error || 'Failed to update favorite status');
-      }
 
       // Update local state on success
       setShows(shows.map(show => 

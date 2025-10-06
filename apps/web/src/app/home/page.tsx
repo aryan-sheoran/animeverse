@@ -75,15 +75,12 @@ const Home = () => {
     let mounted = true;
     const fetchPopular = async () => {
       try {
-        const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3001';
-        
-        // First try to get popular from home_items
-        const homeRes = await fetch(`${serverUrl}/api/home?section=popular`, {
-          credentials: 'include',
-        });
-        
-        if (homeRes.ok) {
-          const items: HomeItem[] = await homeRes.json();
+        // First try to get popular from home_items using RPC
+        try {
+          const items: HomeItem[] = await client.home.getBySection({ 
+            section: 'popular',
+            limit: 12 
+          }) as any;
           if (Array.isArray(items) && items.length > 0) {
             const mapped: PopularShowItem[] = items
               .map((h) => {
@@ -110,6 +107,8 @@ const Home = () => {
               return; // Don't fetch from shows API if we got data from home_items
             }
           }
+        } catch (homeErr) {
+          console.error('Failed to fetch from home items:', homeErr);
         }
         
         // Fallback: fetch from regular shows API using RPC
@@ -191,38 +190,34 @@ const Home = () => {
             .filter((item): item is MappedItem => item !== null);
         };
 
-        // Fetch hero section
-        const heroRes = await fetch(`${serverUrl}/api/home?section=hero`, {
-          credentials: 'include',
-        });
-        
-        if (heroRes.ok) {
-          const heroItems: HomeItem[] = await heroRes.json();
+        // Fetch hero section using RPC
+        try {
+          const heroItems: HomeItem[] = await client.home.getBySection({ 
+            section: 'hero' 
+          }) as any;
           console.log('Hero items fetched:', heroItems);
           const mappedHero = mapItems(heroItems, 'hero');
           console.log('Mapped hero items:', mappedHero);
           if (mounted) {
             setHeroData(mappedHero);
           }
-        } else {
-          console.warn('Hero API not available');
+        } catch (heroErr) {
+          console.warn('Hero API not available:', heroErr);
         }
 
-        // Fetch featured section
-        const featuredRes = await fetch(`${serverUrl}/api/home?section=featured`, {
-          credentials: 'include',
-        });
-        
-        if (featuredRes.ok) {
-          const featuredItems: HomeItem[] = await featuredRes.json();
+        // Fetch featured section using RPC
+        try {
+          const featuredItems: HomeItem[] = await client.home.getBySection({ 
+            section: 'featured' 
+          }) as any;
           console.log('Featured items fetched:', featuredItems);
           const mappedFeatured = mapItems(featuredItems, 'featured');
           console.log('Mapped featured items:', mappedFeatured);
           if (mounted) {
             setFeaturedAnimes(mappedFeatured);
           }
-        } else {
-          console.warn('Featured API not available');
+        } catch (featuredErr) {
+          console.warn('Featured API not available:', featuredErr);
         }
 
       } catch (err) {

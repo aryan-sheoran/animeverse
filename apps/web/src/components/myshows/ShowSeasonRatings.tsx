@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { client } from '@/utils/orpc';
 import styles from './ShowSeasonRatings.module.css';
 
 interface SeasonRating {
@@ -29,21 +30,10 @@ const ShowSeasonRatings: React.FC<ShowSeasonRatingsProps> = ({ showId, compact =
   const loadSeasonRatings = async () => {
     try {
       setLoading(true);
-      const userId = getUserId();
       
-      if (!userId) return;
-
-      const response = await fetch(`/api/ratings/show/${showId}?userId=${userId}`, {
-        credentials: 'include',
-      });
-      
-      if (!response.ok) {
-        console.warn('Failed to fetch season ratings');
-        return;
-      }
-      
-      const data = await response.json();
-      setSeasonRatings(data);
+      // Use RPC to get user's ratings for this show
+      const data = await client.ratings.getMyRatings({ showId });
+      setSeasonRatings(data as any);
     } catch (error) {
       console.error('Error loading season ratings:', error);
     } finally {

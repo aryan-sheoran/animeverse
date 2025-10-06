@@ -62,24 +62,19 @@ const Shows = () => {
         setShows(transformedShows);
         setFilteredShows(transformedShows);
         
-        // Load user shows from your API
+        // Load user shows using RPC
         try {
-          const userShowsResponse = await fetch('/api/user-shows', {
-            credentials: 'include',
-          });
-          if (userShowsResponse.ok) {
-            const userShows = await userShowsResponse.json();
-            console.log('User shows loaded:', userShows);
-            // Extract showId correctly - it could be in showId._id or showId as string
-            const showIds = userShows.map((s: any) => {
-              if (typeof s.showId === 'object' && s.showId?._id) {
-                return s.showId._id.toString();
-              }
-              return s.showId?.toString();
-            }).filter(Boolean);
-            console.log('Extracted show IDs:', showIds);
-            setUserShowIds(new Set(showIds));
-          }
+          const userShows = await client.userShows.getMyShows({});
+          console.log('User shows loaded:', userShows);
+          // Extract showId correctly - it could be in showId._id or showId as string
+          const showIds = (userShows as any[]).map((s: any) => {
+            if (typeof s.showId === 'object' && s.showId?._id) {
+              return s.showId._id.toString();
+            }
+            return s.showId?.toString();
+          }).filter(Boolean);
+          console.log('Extracted show IDs:', showIds);
+          setUserShowIds(new Set(showIds));
         } catch (err) {
           console.log('Could not load user shows (user may not be logged in)');
         }
@@ -132,22 +127,11 @@ const Shows = () => {
     }
 
     try {
-      const response = await fetch('/api/user-shows', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ 
-          showId,
-          isFavorite: false
-        })
+      // Use RPC to add show
+      const addedShow = await client.userShows.addShow({ 
+        showId,
+        isFavorite: false
       });
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-        throw new Error(errorData.error || 'Failed to add show');
-      }
-      
-      const addedShow = await response.json();
       console.log('Show added:', addedShow);
       
       // Add the showId to local state

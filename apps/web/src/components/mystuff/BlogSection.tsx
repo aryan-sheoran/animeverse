@@ -1,6 +1,7 @@
-'use client';
+"use client";
 
 import React, { useState, useEffect } from 'react';
+import { client } from '@/utils/orpc';
 import styles from './BlogSection.module.css';
 import BlogModal from './BlogModal';
 
@@ -31,19 +32,8 @@ const BlogSection: React.FC<BlogSectionProps> = ({ blogPosts, onUpdate }) => {
 
   const handleCreatePost = async (postData: { title: string; content: string; tags: string[] }) => {
     try {
-      const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3001';
-      const response = await fetch(`${serverUrl}/api/blogs`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(postData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create blog post');
-      }
+      // Use RPC API
+      await client.blogs.create(postData);
 
       onUpdate(); // Refresh the blog posts list
       setIsModalOpen(false); // Close the modal on success
@@ -55,15 +45,8 @@ const BlogSection: React.FC<BlogSectionProps> = ({ blogPosts, onUpdate }) => {
 
   const handleLike = async (postId: string) => {
     try {
-      const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3001';
-      const response = await fetch(`${serverUrl}/api/blogs/${postId}/like`, {
-        method: 'POST',
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to like post');
-      }
+      // Use RPC API
+      await client.blogs.like({ id: postId });
 
       if (onUpdate) {
         onUpdate(); // This will re-fetch the posts from the parent component

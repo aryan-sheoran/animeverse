@@ -115,10 +115,9 @@ const ReviewContent = () => {
 
   const loadUserSeasonRatings = async (showId: string) => {
     try {
-      // Replace with your actual API call
-      const response = await fetch(`/api/ratings/show/${showId}`);
-      const data = await response.json();
-      setUserSeasonRatings(data);
+      // Use RPC to get user's season ratings
+      const data = await client.ratings.getMyRatings({ showId });
+      setUserSeasonRatings(data as any);
     } catch (error) {
       console.error('Error loading user season ratings:', error);
     }
@@ -126,14 +125,9 @@ const ReviewContent = () => {
 
   const loadMyReviews = async () => {
     try {
-      // Try REST API first as fallback
-      const response = await fetch('/api/reviews/my-reviews', {
-        credentials: 'include',
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setMyReviews(data);
-      }
+      // Use RPC API
+      const data = await client.reviews.getMyReviews({});
+      setMyReviews(data as any);
     } catch (error) {
       console.error('Error loading my reviews:', error);
       // Silently fail - user might not be logged in
@@ -142,14 +136,9 @@ const ReviewContent = () => {
 
   const loadExistingReviews = async (showId: string) => {
     try {
-      // Use REST API endpoint that already exists
-      const response = await fetch(`/api/reviews/anime/${showId}`, {
-        credentials: 'include',
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setExistingReviews(data);
-      }
+      // Use RPC API
+      const data = await client.reviews.getByAnimeId({ animeId: showId });
+      setExistingReviews(data as any);
     } catch (error) {
       console.error('Error loading existing reviews:', error);
     }
@@ -157,19 +146,14 @@ const ReviewContent = () => {
 
   const loadEpisodeReviews = async (showId: string, seasonNumber: string, episodeNumber: string) => {
     try {
-      // Use REST API endpoint
-      const response = await fetch(`/api/reviews/anime/${showId}`, {
-        credentials: 'include',
-      });
-      if (response.ok) {
-        const allReviews = await response.json();
-        // Filter for specific episode
-        const filtered = allReviews.filter((review: any) => 
-          review.seasonNumber === parseInt(seasonNumber) &&
-          review.episodeNumber === parseInt(episodeNumber)
-        );
-        setEpisodeReviews(filtered);
-      }
+      // Use RPC API
+      const allReviews = await client.reviews.getByAnimeId({ animeId: showId });
+      // Filter for specific episode
+      const filtered = (allReviews as any[]).filter((review: any) => 
+        review.seasonNumber === parseInt(seasonNumber) &&
+        review.episodeNumber === parseInt(episodeNumber)
+      );
+      setEpisodeReviews(filtered);
     } catch (error) {
       console.error('Error loading episode reviews:', error);
     }
@@ -269,20 +253,8 @@ const ReviewContent = () => {
     });
 
     try {
-      // Use REST API endpoint
-      const response = await fetch('/api/reviews', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(reviewData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to submit review');
-      }
+      // Use RPC API
+      await client.reviews.create(reviewData);
 
       toast.success('Review submitted successfully!');
       handleClearReview();

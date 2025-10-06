@@ -1,11 +1,15 @@
-'use client';
+"use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/use-auth';
 import Sidebar from '@/components/sidebar/Sidebar';
-import { UserProfile, ReviewsSection, BlogSection, MyShowsSection } from '@/components/mystuff';
+import UserProfile from '@/components/mystuff/UserProfile';
+import MyShowsSection from '@/components/mystuff/MyShowsSection';
+import ReviewsSection from '@/components/mystuff/ReviewsSection';
+import BlogSection from '@/components/mystuff/BlogSection';
+import { client } from '@/utils/orpc';
 import styles from './mystuff.module.css';
+import { useAuth } from '@/lib/use-auth';
 
 interface BlogPost {
   _id: string;
@@ -38,18 +42,9 @@ const MyStuff = () => {
   const fetchBlogPosts = useCallback(async () => {
     if (isAuthenticated) {
       try {
-        const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3001';
-        const response = await fetch(`${serverUrl}/api/blogs/my-blogs`, {
-          credentials: 'include',
-        });
-        
-        if (!response.ok) {
-          console.warn('Blog posts API not available yet');
-          return;
-        }
-        
-        const data = await response.json();
-        setBlogPosts(data);
+        // Use RPC API
+        const data = await client.blogs.getMyBlogs({});
+        setBlogPosts(data as any);
       } catch (error) {
         console.error('Failed to fetch blog posts:', error);
       }
@@ -59,18 +54,9 @@ const MyStuff = () => {
   const fetchReviews = useCallback(async () => {
     if (isAuthenticated) {
       try {
-        const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3001';
-        const response = await fetch(`${serverUrl}/api/reviews/my-reviews`, {
-          credentials: 'include',
-        });
-        
-        if (!response.ok) {
-          console.warn('Reviews API not available yet');
-          return;
-        }
-        
-        const data = await response.json();
-        setReviews(data);
+        // Use RPC API
+        const data = await client.reviews.getMyReviews({});
+        setReviews(data as any);
       } catch (error) {
         console.error('Failed to fetch reviews:', error);
       }
