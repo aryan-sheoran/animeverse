@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Sidebar from '@/components/sidebar/Sidebar';
 import styles from './anime-reviews.module.css';
@@ -33,7 +33,7 @@ interface AnimeInfo {
   ratingCount?: number;
 }
 
-const AnimeReviews = () => {
+const AnimeReviewsContent = () => {
   const searchParams = useSearchParams();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [animeInfo, setAnimeInfo] = useState<AnimeInfo | null>(null);
@@ -309,6 +309,30 @@ const AnimeReviews = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+// Loading component for Suspense fallback
+const ReviewsLoading = () => {
+  return (
+    <div className={styles.animeReviewsRoot}>
+      <Sidebar />
+      <div className={styles.mainContent}>
+        <div className={styles.loading}>
+          <i className="fas fa-spinner fa-spin"></i>
+          <span style={{ marginLeft: '10px' }}>Loading reviews...</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Main component with Suspense boundary
+const AnimeReviews = () => {
+  return (
+    <Suspense fallback={<ReviewsLoading />}>
+      <AnimeReviewsContent />
+    </Suspense>
   );
 };
 

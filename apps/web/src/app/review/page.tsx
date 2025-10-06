@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import styles from './review.module.css';
 import Sidebar from '@/components/sidebar/Sidebar';
@@ -8,7 +8,7 @@ import { Header, AnimeInfo, ReviewForm } from '@/components/review';
 import { client } from '@/utils/orpc';
 import { toast } from 'sonner';
 
-const Review = () => {
+const ReviewContent = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [rating, setRating] = useState(4);
@@ -373,6 +373,30 @@ const Review = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+// Loading component for Suspense fallback
+const ReviewLoading = () => {
+  return (
+    <div className={styles.reviewRoot}>
+      <Sidebar />
+      <div className={styles.reviewContainer}>
+        <div style={{ textAlign: 'center', padding: '50px', color: '#e0e0e0' }}>
+          <i className="fas fa-spinner fa-spin" style={{ fontSize: '2rem' }}></i>
+          <p style={{ marginTop: '20px' }}>Loading...</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Main component with Suspense boundary
+const Review = () => {
+  return (
+    <Suspense fallback={<ReviewLoading />}>
+      <ReviewContent />
+    </Suspense>
   );
 };
 

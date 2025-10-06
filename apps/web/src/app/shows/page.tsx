@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/sidebar/Sidebar';
 import ShowCard from '@/components/shows/ShowCard';
 import styles from './shows.module.css';
