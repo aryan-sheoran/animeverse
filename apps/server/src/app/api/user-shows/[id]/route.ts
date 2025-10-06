@@ -4,16 +4,10 @@ import { UserShow } from "@/db/models/user-show.model";
 import { auth } from "@/lib/auth";
 import mongoose from "mongoose";
 
-interface RouteParams {
-	params: {
-		id: string;
-	};
-}
-
 // DELETE - Remove a user show
 export async function DELETE(
 	request: NextRequest,
-	{ params }: RouteParams
+	{ params }: { params: Promise<{ id: string }> }
 ) {
 	try {
 		const session = await auth.api.getSession({
@@ -27,7 +21,7 @@ export async function DELETE(
 			);
 		}
 
-		const { id } = params;
+		const { id } = await params;
 
 		if (!mongoose.Types.ObjectId.isValid(id)) {
 			return NextResponse.json(
@@ -61,7 +55,7 @@ export async function DELETE(
 // PATCH - Update a user show (e.g., toggle favorite, update progress)
 export async function PATCH(
 	request: NextRequest,
-	{ params }: RouteParams
+	{ params }: { params: Promise<{ id: string }> }
 ) {
 	try {
 		const session = await auth.api.getSession({
@@ -75,7 +69,7 @@ export async function PATCH(
 			);
 		}
 
-		const { id } = params;
+		const { id } = await params;
 
 		if (!mongoose.Types.ObjectId.isValid(id)) {
 			return NextResponse.json(
@@ -124,7 +118,7 @@ export async function PATCH(
 // GET - Get a specific user show
 export async function GET(
 	request: NextRequest,
-	{ params }: RouteParams
+	{ params }: { params: Promise<{ id: string }> }
 ) {
 	try {
 		const session = await auth.api.getSession({
@@ -138,7 +132,7 @@ export async function GET(
 			);
 		}
 
-		const { id } = params;
+		const { id } = await params;
 
 		if (!mongoose.Types.ObjectId.isValid(id)) {
 			return NextResponse.json(
