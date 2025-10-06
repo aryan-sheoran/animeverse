@@ -35,17 +35,31 @@ export const reviewRouter = {
 					.skip(input.skip)
 					.lean();
 				
+				console.log('📋 Found reviews:', reviews.length);
+				if (reviews.length > 0) {
+					console.log('📋 First review user field:', reviews[0].user, 'Type:', typeof reviews[0].user);
+				}
+				
 				// Manually populate user data to handle both ObjectId and String user IDs
 				const reviewsWithUsers = await Promise.all(
 					reviews.map(async (review: any) => {
 						try {
-							const user = await User.findById(review.user).select('name email').lean();
+							console.log('👤 Looking up user with ID:', review.user, 'Type:', typeof review.user);
+							
+							// Convert ObjectId to string if needed
+							const userId = review.user.toString ? review.user.toString() : review.user;
+							console.log('👤 Converted userId:', userId, 'Type:', typeof userId);
+							
+							// Use findOne with _id since User model has String _id
+							const user = await User.findOne({ _id: userId }).select('name email').lean() as any;
+							console.log('👤 Found user:', user ? (user as any).name : 'Not found');
+							
 							return {
 								...review,
 								user: user || { name: 'Unknown User', email: '' }
 							};
 						} catch (error) {
-							console.error('Error populating user for review:', review._id, error);
+							console.error('❌ Error populating user for review:', review._id, error);
 							return {
 								...review,
 								user: { name: 'Unknown User', email: '' }
