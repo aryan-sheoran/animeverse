@@ -3,6 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Sidebar from '@/components/sidebar/Sidebar';
+import { client } from '@/utils/orpc';
 import styles from './anime-reviews.module.css';
 
 interface Review {
@@ -59,48 +60,37 @@ const AnimeReviewsContent = () => {
         setShowId(paramShowId);
         console.log('🔍 Loading reviews for show ID:', paramShowId);
 
-        // Fetch anime details and reviews in parallel
-        const reviewsUrl = `/api/reviews/anime/${paramShowId}`;
-        const showUrl = `/api/shows/${paramShowId}?includeRatings=true`;
+        // Fetch anime details and reviews in parallel using RPC
+        console.log('📡 Fetching show and reviews via RPC');
         
-        console.log('📡 Fetching from:', reviewsUrl);
-        console.log('📡 Fetching from:', showUrl);
-        
-        const [reviewsResponse, showResponse] = await Promise.all([
-          fetch(reviewsUrl, {
-            credentials: 'include',
+        const [reviewsData, showData] = await Promise.all([
+          client.reviews.getByAnimeId({ animeId: paramShowId }).catch((err) => {
+            console.error('❌ Failed to fetch reviews:', err);
+            return [];
           }),
-          fetch(showUrl, {
-            credentials: 'include',
+          client.shows.getById({ 
+            id: paramShowId, 
+            includeRatings: true 
+          }).catch((err) => {
+            console.error('❌ Failed to fetch show:', err);
+            return null;
           })
         ]);
 
         // Handle reviews
-        console.log('📥 Reviews response status:', reviewsResponse.status, reviewsResponse.ok);
-        if (reviewsResponse.ok) {
-          const reviewsData = await reviewsResponse.json();
-          console.log('✅ Loaded reviews:', reviewsData);
-          console.log('📊 Number of reviews:', reviewsData.length);
-          if (Array.isArray(reviewsData) && reviewsData.length > 0) {
-            console.log('📝 First review:', reviewsData[0]);
-          }
-          setReviews(reviewsData || []);
-        } else {
-          const errorText = await reviewsResponse.text();
-          console.error('❌ Failed to fetch reviews:', reviewsResponse.status, errorText);
-          setReviews([]);
+        console.log('✅ Loaded reviews:', reviewsData);
+        console.log('📊 Number of reviews:', reviewsData.length);
+        if (Array.isArray(reviewsData) && reviewsData.length > 0) {
+          console.log('📝 First review:', reviewsData[0]);
         }
+        setReviews(reviewsData as any || []);
 
         // Handle show data
-        console.log('📥 Show response status:', showResponse.status, showResponse.ok);
-        if (showResponse.ok) {
-          const showData = await showResponse.json();
+        if (showData) {
           console.log('✅ Loaded show data:', showData);
-          setAnimeInfo(showData);
+          setAnimeInfo(showData as any);
         } else {
-          const errorText = await showResponse.text();
-          console.error('❌ Failed to fetch show:', showResponse.status);
-          console.error('Error details:', errorText);
+          console.error('❌ Failed to fetch show');
           setError('Failed to load anime information');
           
           // Set minimal fallback info

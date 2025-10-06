@@ -69,9 +69,11 @@ const ReviewContent = () => {
   const loadShowData = async (showId: string) => {
     setIsLoadingShowData(true);
     try {
-      // Replace with your actual API call
-      const response = await fetch(`/api/shows/${showId}`);
-      const data = await response.json();
+      // Fetch show data using RPC
+      const data = await client.shows.getById({
+        id: showId,
+        includeRatings: false,
+      }) as any;
       setShowData({
         id: data._id,
         title: data.title,

@@ -2,6 +2,8 @@ import { z } from "zod";
 import { protectedProcedure, publicProcedure } from "../lib/orpc";
 import { Show } from "../db/models/show.model";
 import { HomeItem } from "../db/models/home-item.model";
+import { SeasonRating } from "../db/models/season-rating.model";
+import { Review } from "../db/models/review.model";
 import mongoose from "mongoose";
 
 export const showRouter = {
@@ -13,9 +15,10 @@ export const showRouter = {
 			search: z.string().optional(),
 			genres: z.array(z.string()).optional(),
 			sortBy: z.enum(['rating', 'recent', 'title']).optional().default('recent'),
+			includeRatings: z.boolean().optional().default(true),
 		}))
 		.handler(async ({ input }) => {
-			const { limit, skip, search, genres, sortBy } = input;
+			const { limit, skip, search, genres, sortBy, includeRatings } = input;
 			
 			const query: any = {};
 			
@@ -30,28 +33,79 @@ export const showRouter = {
 				query.genres = { $in: genres };
 			}
 			
-		const sort: any = {};
-		if (sortBy === 'rating') sort.rating = -1;
-		else if (sortBy === 'title') sort.title = 1;
-		else sort.createdAt = -1;
-		
-		try {
-			const shows = await Show.find(query)
-				.sort(sort)
-				.limit(limit)
-				.skip(skip)
-				.lean();
+			const sort: any = {};
+			if (sortBy === 'rating') sort.rating = -1;
+			else if (sortBy === 'title') sort.title = 1;
+			else sort.createdAt = -1;
 			
-			console.log(`✅ Router: Found ${shows.length} shows in database`);
-			return shows;
-		} catch (error) {
-			console.error('❌ Router: Error fetching shows:', error);
-			throw error;
-		}
-	}),	// Get single show by ID
+			try {
+				const shows = await Show.find(query)
+					.sort(sort)
+					.limit(limit)
+					.skip(skip)
+					.lean();
+				
+				console.log(`✅ Router: Found ${shows.length} shows in database`);
+				
+				// Add average ratings to each show if requested
+				if (includeRatings) {
+					const showsWithRatings = await Promise.all(
+						shows.map(async (show: any) => {
+							try {
+								// Get all season ratings for this show (0-5 scale)
+								const seasonRatings = await SeasonRating.find({ show: show._id }).lean();
+								
+								// Get all reviews for this show (0-10 scale)
+								const reviews = await Review.find({ animeId: show._id.toString() }).lean();
+								
+								// Normalize ratings to 0-5 scale
+								const seasonRatingValues = seasonRatings.map(r => Number(r.rating || 0));
+								const reviewRatingValues = reviews
+									.map(r => {
+										const val = Number(r.rating);
+										// Convert 0-10 to 0-5 scale
+										return Number.isFinite(val) ? Math.max(0, Math.min(5, val / 2)) : null;
+									})
+									.filter((v): v is number => v !== null && !Number.isNaN(v));
+								
+								// Combine all ratings
+								const allRatings = [...seasonRatingValues, ...reviewRatingValues];
+								
+								if (allRatings.length === 0) {
+									return { ...show, rating: 0, ratingCount: 0 };
+								}
+								
+								// Calculate average
+								const sum = allRatings.reduce((acc, rating) => acc + rating, 0);
+								const average = sum / allRatings.length;
+								
+								return {
+									...show,
+									rating: Number(average.toFixed(2)), // 0-5 scale
+									ratingCount: allRatings.length
+								};
+							} catch (error) {
+								console.error(`Error calculating rating for show ${show._id}:`, error);
+								return { ...show, rating: 0, ratingCount: 0 };
+							}
+						})
+					);
+					
+					return showsWithRatings;
+				}
+				
+				return shows;
+			} catch (error) {
+				console.error('❌ Router: Error fetching shows:', error);
+				throw error;
+			}
+		}),
+
+	// Get single show by ID
 	getById: publicProcedure
 		.input(z.object({
 			id: z.string(),
+			includeRatings: z.boolean().optional().default(true),
 		}))
 		.handler(async ({ input }) => {
 			if (!mongoose.Types.ObjectId.isValid(input.id)) {
@@ -62,6 +116,51 @@ export const showRouter = {
 			
 			if (!show) {
 				throw new Error("Show not found");
+			}
+			
+			// Increment view count
+			await Show.findByIdAndUpdate(input.id, {
+				$inc: { viewCount: 1 }
+			});
+			
+			// Add ratings if requested
+			if (input.includeRatings) {
+				try {
+					// Get all season ratings for this show (0-5 scale)
+					const seasonRatings = await SeasonRating.find({ show: input.id }).lean();
+					
+					// Get all reviews for this show (0-10 scale)
+					const reviews = await Review.find({ animeId: input.id }).lean();
+					
+					// Normalize ratings to 0-5 scale
+					const seasonRatingValues = seasonRatings.map(r => Number(r.rating || 0));
+					const reviewRatingValues = reviews
+						.map(r => {
+							const val = Number(r.rating);
+							// Convert 0-10 to 0-5 scale
+							return Number.isFinite(val) ? Math.max(0, Math.min(5, val / 2)) : null;
+						})
+						.filter((v): v is number => v !== null && !Number.isNaN(v));
+					
+					// Combine all ratings
+					const allRatings = [...seasonRatingValues, ...reviewRatingValues];
+					
+					if (allRatings.length > 0) {
+						const sum = allRatings.reduce((acc, rating) => acc + rating, 0);
+						const average = sum / allRatings.length;
+						
+						return {
+							...show,
+							rating: Number(average.toFixed(2)), // 0-5 scale
+							ratingCount: allRatings.length
+						};
+					}
+					
+					return { ...show, rating: 0, ratingCount: 0 };
+				} catch (error) {
+					console.error(`Error calculating rating for show ${input.id}:`, error);
+					return { ...show, rating: 0, ratingCount: 0 };
+				}
 			}
 			
 			return show;

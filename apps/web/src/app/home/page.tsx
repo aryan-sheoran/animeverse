@@ -1,10 +1,11 @@
-'use client';
+"use client";
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/sidebar/Sidebar';
-import { HeroCarousel, PopularShows, FeaturedAnime } from '@/components/home';
+import { client } from '@/utils/orpc';
 import styles from './home.module.css';
+import { HeroCarousel, FeaturedAnime, PopularShows } from '@/components/home';
 import { useAuth } from '@/lib/use-auth';
 
 interface Show {
@@ -111,34 +112,31 @@ const Home = () => {
           }
         }
         
-        // Fallback: fetch from regular shows API
-        const res = await fetch(`${serverUrl}/api/shows`, {
-          credentials: 'include',
-        });
+        // Fallback: fetch from regular shows API using RPC
+        try {
+          const shows: Show[] = await client.shows.getAll({
+            includeRatings: false,
+          });
+          
+          // Ensure shows is an array
+          if (!Array.isArray(shows)) {
+            console.warn('Shows API returned non-array data:', shows);
+            return;
+          }
         
-        if (!res.ok) {
-          console.warn('Shows API not available yet');
-          return;
-        }
-        
-        let shows: Show[] = await res.json();
-        
-        // Ensure shows is an array
-        if (!Array.isArray(shows)) {
-          console.warn('Shows API returned non-array data:', shows);
-          shows = [];
-        }
-        
-        const mapped: PopularShowItem[] = shows.slice(0, 12).map((s) => ({
-          id: s._id,
-          showId: getShowId(s),
-          image: pickImage(s),
-          title: s.title || 'Untitled',
-          description: s.description || '',
-          type: (s.genres && s.genres.length ? s.genres[0] : 'Unknown')
-        })).filter(item => item.image && item.title);
+          const mapped: PopularShowItem[] = shows.slice(0, 12).map((s) => ({
+            id: s._id,
+            showId: getShowId(s),
+            image: pickImage(s),
+            title: s.title || 'Untitled',
+            description: s.description || '',
+            type: (s.genres && s.genres.length ? s.genres[0] : 'Unknown')
+          })).filter(item => item.image && item.title);
 
-        if (mounted) setPopularShows(mapped);
+          if (mounted) setPopularShows(mapped);
+        } catch (fetchErr) {
+          console.error('Failed to fetch shows:', fetchErr);
+        }
       } catch (err) {
         console.error('Failed to fetch popular shows:', err);
       }

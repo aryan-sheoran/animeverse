@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/sidebar/Sidebar';
 import ShowCard from '@/components/shows/ShowCard';
+import { client } from '@/utils/orpc';
 import styles from './shows.module.css';
 
 const Shows = () => {
@@ -30,20 +31,15 @@ const Shows = () => {
     const loadData = async () => {
       setLoading(true);
       try {
-        console.log('Fetching shows from API...');
+        console.log('Fetching shows from RPC API...');
         
-        // Fetch shows from database with ratings included
-        const showsResponse = await fetch('/api/shows?limit=100&sortBy=recent&includeRatings=true');
+        // Fetch shows from database with ratings included using RPC
+        const showsData = await client.shows.getAll({
+          limit: 100,
+          sortBy: 'recent',
+          includeRatings: true,
+        });
         
-        console.log('Response status:', showsResponse.status);
-        
-        if (!showsResponse.ok) {
-          const errorText = await showsResponse.text();
-          console.error('API Error:', errorText);
-          throw new Error(`Failed to fetch shows: ${showsResponse.status}`);
-        }
-        
-        const showsData = await showsResponse.json();
         console.log('Fetched shows data:', showsData);
         console.log('Number of shows:', showsData.length);
         

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/sidebar/Sidebar';
 import ShowCard from '@/components/shows/ShowCard';
+import { client } from '@/utils/orpc';
 import styles from './explore-review.module.css';
 
 interface Show {
@@ -38,9 +39,10 @@ const ExploreReview = () => {
     const loadData = async () => {
       setLoading(true);
       try {
-        // Fetch shows with ratings already calculated by the backend
-        const showsResponse = await fetch('/api/shows?includeRatings=true');
-        const showsData = await showsResponse.json();
+        // Fetch shows with ratings using RPC
+        const showsData = await client.shows.getAll({
+          includeRatings: true,
+        });
 
         // Format basic show data - only include shows with valid images
         const formattedShows = showsData
