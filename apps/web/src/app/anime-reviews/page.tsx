@@ -59,31 +59,55 @@ const AnimeReviewsContent = () => {
 
         setShowId(paramShowId);
         console.log('🔍 Loading reviews for show ID:', paramShowId);
+        console.log('🔍 Show ID type:', typeof paramShowId);
+        console.log('🔍 Show ID value:', JSON.stringify(paramShowId));
 
         // Fetch anime details and reviews in parallel using RPC
         console.log('📡 Fetching show and reviews via RPC');
         
-        const [reviewsData, showData] = await Promise.all([
-          client.reviews.getByAnimeId({ animeId: paramShowId }).catch((err) => {
-            console.error('❌ Failed to fetch reviews:', err);
-            return [];
-          }),
-          client.shows.getById({ 
+        // Fetch reviews using RPC
+        let reviewsData: any[] = [];
+        try {
+          console.log('📡 Calling client.reviews.getByAnimeId with:', { animeId: paramShowId, limit: 100, skip: 0 });
+          reviewsData = await client.reviews.getByAnimeId({ 
+            animeId: paramShowId,
+            limit: 100,
+            skip: 0
+          });
+          console.log('✅ Raw reviews response:', reviewsData);
+          console.log('✅ Reviews type:', typeof reviewsData);
+          console.log('✅ Is Array:', Array.isArray(reviewsData));
+        } catch (err) {
+          console.error('❌ Failed to fetch reviews:', err);
+          console.error('❌ Error details:', JSON.stringify(err, null, 2));
+          reviewsData = [];
+        }
+
+        // Fetch show data using RPC
+        let showData: any = null;
+        try {
+          console.log('📡 Calling client.shows.getById with:', { id: paramShowId, includeRatings: true });
+          showData = await client.shows.getById({ 
             id: paramShowId, 
             includeRatings: true 
-          }).catch((err) => {
-            console.error('❌ Failed to fetch show:', err);
-            return null;
-          })
-        ]);
+          });
+          console.log('✅ Raw show response:', showData);
+        } catch (err) {
+          console.error('❌ Failed to fetch show:', err);
+          console.error('❌ Error details:', JSON.stringify(err, null, 2));
+        }
 
         // Handle reviews
-        console.log('✅ Loaded reviews:', reviewsData);
-        console.log('📊 Number of reviews:', reviewsData.length);
+        console.log('📊 Processing reviews data...');
+        console.log('📊 Number of reviews:', Array.isArray(reviewsData) ? reviewsData.length : 0);
         if (Array.isArray(reviewsData) && reviewsData.length > 0) {
-          console.log('📝 First review:', reviewsData[0]);
+          console.log('📝 First review:', JSON.stringify(reviewsData[0], null, 2));
         }
-        setReviews(reviewsData as any || []);
+        
+        // Ensure we have an array and set reviews
+        const reviewsArray = Array.isArray(reviewsData) ? reviewsData : [];
+        console.log('📋 Setting reviews state with:', reviewsArray.length, 'reviews');
+        setReviews(reviewsArray);
 
         // Handle show data
         if (showData) {
@@ -235,7 +259,7 @@ const AnimeReviewsContent = () => {
             </div>
           )}
           
-          {!loading && reviews.length > 0 ? (
+          {!loading && reviews && reviews.length > 0 ? (
             <div className={styles.reviewsList}>
               {reviews.map((review) => (
                 <div key={review._id} className={styles.reviewCard}>

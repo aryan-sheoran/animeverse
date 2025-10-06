@@ -211,9 +211,9 @@ const ReviewContent = () => {
       return;
     }
 
-    // Validate that both season and episode are selected together (or neither)
-    if ((selectedSeason && !selectedEpisode) || (!selectedSeason && selectedEpisode)) {
-      toast.error('Please select both season and episode, or leave both empty for a general review.');
+    // Require both season and episode to be selected
+    if (!selectedSeason || !selectedEpisode) {
+      toast.error('Please select season and episode.');
       return;
     }
 
