@@ -14,6 +14,7 @@ export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [step, setStep] = useState(1); // 1: verify identity, 2: set new password
+  const [stepTransition, setStepTransition] = useState(false);
   const [verifiedData, setVerifiedData] = useState<{ email: string; username: string } | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -48,11 +49,18 @@ export default function ForgotPasswordPage() {
         return;
       }
 
-      // Identity verified
+      // Identity verified - move to step 2 with smooth transition
       setVerifiedData({ email, username });
-      setSuccess('Identity verified! Please set your new password.');
-      setStep(2);
-      setIsLoading(false);
+      setError(''); // Clear any previous errors
+      setSuccess(''); // Clear success message for clean transition
+      
+      // Fade out, then change step, then fade in
+      setStepTransition(true);
+      setTimeout(() => {
+        setStep(2);
+        setStepTransition(false);
+        setIsLoading(false);
+      }, 300);
     } catch (err: any) {
       setError(err.message || 'Network error. Please try again.');
       setIsLoading(false);
@@ -146,12 +154,24 @@ export default function ForgotPasswordPage() {
               {step === 1 ? 'Forgot Password?' : 'Set New Password'}
             </h1>
             
-            {step === 1 ? (
-              <>
-                <p className={styles.subtitle} style={{ marginBottom: '25px', fontSize: '14px', color: 'rgba(255,255,255,0.8)' }}>
-                  Enter your email and username to verify your identity
-                </p>
-                <form ref={formRef} className={styles.form} onSubmit={handleVerifyIdentity}>
+            <p className={styles.subtitle} style={{ marginBottom: '25px', fontSize: '14px', color: 'rgba(255,255,255,0.8)' }}>
+              {step === 1 
+                ? 'Enter your email and username to verify your identity' 
+                : 'Create a new password for your account'}
+            </p>
+
+            <form 
+              ref={formRef} 
+              className={styles.form} 
+              onSubmit={step === 1 ? handleVerifyIdentity : handleResetPassword}
+              style={{
+                opacity: stepTransition ? 0 : 1,
+                transition: 'opacity 0.3s ease-in-out'
+              }}
+            >
+              {/* Step 1: Email and Username inputs */}
+              {step === 1 && (
+                <>
                   <div className={styles.inputBox}>
                     <input 
                       type="email" 
@@ -175,43 +195,12 @@ export default function ForgotPasswordPage() {
                     />
                     <i className={`bx bxs-user ${styles.inputIcon}`}></i>
                   </div>
+                </>
+              )}
 
-                  {error && (
-                    <div className={styles.errorMessage} style={{ marginBottom: '15px' }}>
-                      {error}
-                    </div>
-                  )}
-
-                  {success && (
-                    <div className={styles.successMessage} style={{ marginBottom: '15px' }}>
-                      {success}
-                    </div>
-                  )}
-
-                  <button 
-                    type="submit" 
-                    className={styles.btn}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? 'Verifying...' : 'Verify Identity'}
-                  </button>
-
-                  <div className={styles.register}>
-                    <p>
-                      Remember your password?{' '}
-                      <Link href="/login">
-                        <span>Login here</span>
-                      </Link>
-                    </p>
-                  </div>
-                </form>
-              </>
-            ) : (
-              <>
-                <p className={styles.subtitle} style={{ marginBottom: '25px', fontSize: '14px', color: 'rgba(255,255,255,0.8)' }}>
-                  Create a new password for your account
-                </p>
-                <form ref={formRef} className={styles.form} onSubmit={handleResetPassword}>
+              {/* Step 2: Password inputs - appear in same space */}
+              {step === 2 && (
+                <>
                   <div className={styles.inputBox}>
                     <input 
                       type={showPassword ? "text" : "password"} 
@@ -249,37 +238,49 @@ export default function ForgotPasswordPage() {
                       style={{ cursor: 'pointer' }}
                     ></i>
                   </div>
+                </>
+              )}
 
-                  {error && (
-                    <div className={styles.errorMessage} style={{ marginBottom: '15px' }}>
-                      {error}
-                    </div>
-                  )}
+              {error && (
+                <div className={styles.errorMessage} style={{ marginBottom: '15px' }}>
+                  {error}
+                </div>
+              )}
 
-                  {success && (
-                    <div className={styles.successMessage} style={{ marginBottom: '15px' }}>
-                      {success}
-                    </div>
-                  )}
+              {success && (
+                <div className={styles.successMessage} style={{ marginBottom: '15px' }}>
+                  {success}
+                </div>
+              )}
 
-                  <button 
-                    type="submit" 
-                    className={styles.btn}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? 'Resetting...' : 'Reset Password'}
-                  </button>
+              <button 
+                type="submit" 
+                className={styles.btn}
+                disabled={isLoading}
+              >
+                {step === 1 
+                  ? (isLoading ? 'Verifying...' : 'Verify Identity')
+                  : (isLoading ? 'Resetting...' : 'Reset Password')
+                }
+              </button>
 
-                  <div className={styles.register}>
-                    <p>
+              <div className={styles.register}>
+                <p>
+                  {step === 1 ? (
+                    <>
+                      Remember your password?{' '}
                       <Link href="/login">
-                        <span>Back to Login</span>
+                        <span>Login here</span>
                       </Link>
-                    </p>
-                  </div>
-                </form>
-              </>
-            )}
+                    </>
+                  ) : (
+                    <Link href="/login">
+                      <span>Back to Login</span>
+                    </Link>
+                  )}
+                </p>
+              </div>
+            </form>
           </div>
         </div>
       </div>
