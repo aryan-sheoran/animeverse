@@ -105,7 +105,9 @@ const AnimeReviewsContent = () => {
         if (Array.isArray(reviewsData) && reviewsData.length > 0) {
           console.log('📝 First review:', JSON.stringify(reviewsData[0], null, 2));
           console.log('👤 First review user object:', reviewsData[0].user);
+          console.log('👤 User object type:', typeof reviewsData[0].user);
           console.log('👤 User name:', reviewsData[0].user?.name);
+          console.log('👤 User keys:', reviewsData[0].user ? Object.keys(reviewsData[0].user) : 'no user');
         }
         
         // Ensure we have an array and set reviews
@@ -274,7 +276,9 @@ const AnimeReviewsContent = () => {
                       </div>
                       <div className={styles.reviewerDetails}>
                         <h4 className={styles.reviewerName}>
-                          {review.user?.name || 'Anonymous User'}
+                          {typeof review.user === 'object' && review.user !== null 
+                            ? (review.user.name || 'Unknown User')
+                            : 'Anonymous User'}
                         </h4>
                         <p className={styles.reviewDate}>
                           {formatDate(review.createdAt)}
