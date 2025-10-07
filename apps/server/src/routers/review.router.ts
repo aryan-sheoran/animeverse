@@ -73,7 +73,10 @@ export const reviewRouter = {
 			skip: z.number().optional().default(0),
 		}))
 		.handler(async ({ input, context }) => {
-			const reviews = await Review.find({ user: context.session?.user?.id })
+			const userId = context.session?.user?.id;
+			const userObjectId = new mongoose.Types.ObjectId(userId);
+			
+			const reviews = await Review.find({ user: userObjectId })
 				.sort({ createdAt: -1 })
 				.limit(input.limit)
 				.skip(input.skip)
@@ -126,10 +129,13 @@ export const reviewRouter = {
 		.handler(async ({ input, context }) => {
 			const userId = context.session?.user?.id;
 			
+			// Convert string user ID to ObjectId
+			const userObjectId = new mongoose.Types.ObjectId(userId);
+			
 			// Check for duplicate review if episode is specified
 			if (input.episodeNumber !== undefined) {
 				const existingReview = await Review.findOne({
-					user: userId,
+					user: userObjectId,
 					animeId: input.animeId,
 					seasonNumber: input.seasonNumber,
 					episodeNumber: input.episodeNumber,
@@ -142,7 +148,7 @@ export const reviewRouter = {
 			
 			const review = await Review.create({
 				...input,
-				user: userId,
+				user: userObjectId,
 			});
 			
 			return review;
@@ -164,9 +170,11 @@ export const reviewRouter = {
 			}
 			
 			const { id, ...updateData } = input;
+			const userId = context.session?.user?.id;
+			const userObjectId = new mongoose.Types.ObjectId(userId);
 			
 			const review = await Review.findOneAndUpdate(
-				{ _id: id, user: context.session?.user?.id },
+				{ _id: id, user: userObjectId },
 				updateData,
 				{ new: true, runValidators: true }
 			);
@@ -188,9 +196,12 @@ export const reviewRouter = {
 				throw new Error("Invalid review ID");
 			}
 			
+			const userId = context.session?.user?.id;
+			const userObjectId = new mongoose.Types.ObjectId(userId);
+			
 			const review = await Review.findOneAndDelete({
 				_id: input.id,
-				user: context.session?.user?.id,
+				user: userObjectId,
 			});
 			
 			if (!review) {

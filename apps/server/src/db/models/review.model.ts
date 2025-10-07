@@ -5,7 +5,7 @@ const { Schema, model } = mongoose;
 const reviewSchema = new Schema(
 	{
 		user: {
-			type: mongoose.Schema.Types.Mixed,
+			type: Schema.Types.ObjectId,
 			ref: 'User',
 			required: true,
 			index: true
