@@ -24,60 +24,30 @@ export const reviewRouter = {
 				console.log('🔍 MongoDB connection state:', mongoose.connection.readyState);
 				console.log('🔍 Review model:', Review ? 'Available' : 'Not available');
 				
-				// Debug: Check all reviews in the database
-				const allReviews = await Review.find({}).limit(5).lean();
-				console.log('🔍 Sample of all reviews in DB:', allReviews.length > 0 ? allReviews.map((r: any) => ({ _id: r._id, animeId: r.animeId, animeTitle: r.animeTitle })) : 'No reviews in database');
-				
-				// Fetch reviews without populate first to avoid type mismatch issues
+				// Fetch reviews and manually populate user data
 				const reviews = await Review.find({ animeId: input.animeId })
 					.sort({ createdAt: -1 })
 					.limit(input.limit)
 					.skip(input.skip)
 					.lean();
 				
-				console.log('📋 Found reviews:', reviews.length);
-				if (reviews.length > 0) {
-					console.log('📋 First review user field:', reviews[0].user, 'Type:', typeof reviews[0].user);
-				}
+				console.log('✅ Found reviews for animeId', input.animeId, ':', reviews.length);
 				
-				// Manually populate user data to handle both ObjectId and String user IDs
+				// Manually populate user data by converting ObjectId to string
 				const reviewsWithUsers = await Promise.all(
 					reviews.map(async (review: any) => {
 						try {
-							console.log('👤 Looking up user with ID:', review.user, 'Type:', typeof review.user);
-							
-							// Convert ObjectId to string if needed
-							const userId = review.user.toString ? review.user.toString() : review.user;
-							console.log('👤 Converted userId:', userId, 'Type:', typeof userId);
-							
-							// Check if user exists in database - try both methods
-							let user = await User.findOne({ _id: userId }).select('name email').lean() as any;
-							
-							// If not found, also try findById in case the _id is actually stored as ObjectId
-							if (!user) {
-								console.log('👤 User not found with findOne, trying findById...');
-								try {
-									user = await User.findById(userId).select('name email').lean() as any;
-								} catch (e) {
-									console.log('👤 findById also failed');
-								}
-							}
-							
-							console.log('👤 Found user:', user ? (user as any).name : 'Not found');
-							
-							// If still no user, let's check what users exist
-							if (!user) {
-								const sampleUser = await User.findOne({}).select('_id name').lean();
-								console.log('👤 Sample user from database:', sampleUser);
-								console.log('👤 Sample user _id type:', typeof (sampleUser as any)?._id);
-							}
+							// Convert ObjectId to string for user lookup
+							// The user field in review is stored as ObjectId, but User._id is a string
+							const userId = review.user.toString();
+							const user = await User.findOne({ _id: userId }).select('name email').lean();
 							
 							return {
 								...review,
 								user: user || { name: 'Unknown User', email: '' }
 							};
 						} catch (error) {
-							console.error('❌ Error populating user for review:', review._id, error);
+							console.error('Error populating user for review:', review._id, error);
 							return {
 								...review,
 								user: { name: 'Unknown User', email: '' }
@@ -86,17 +56,6 @@ export const reviewRouter = {
 					})
 				);
 				
-				console.log('✅ Found reviews for animeId', input.animeId, ':', reviewsWithUsers.length);
-				if (reviewsWithUsers.length > 0) {
-					console.log('✅ First review sample:', JSON.stringify(reviewsWithUsers[0], null, 2));
-				} else {
-					console.log('⚠️ No reviews found. Checking if animeId exists in any review...');
-					const anyReviewWithThisId = await Review.findOne({}).lean();
-					if (anyReviewWithThisId) {
-						console.log('⚠️ Sample review animeId format:', (anyReviewWithThisId as any).animeId, 'Type:', typeof (anyReviewWithThisId as any).animeId);
-						console.log('⚠️ Requested animeId format:', input.animeId, 'Type:', typeof input.animeId);
-					}
-				}
 				return reviewsWithUsers;
 			} catch (error: any) {
 				console.error('❌ Error fetching reviews:', error);
@@ -133,12 +92,20 @@ export const reviewRouter = {
 				throw new Error("Invalid review ID");
 			}
 			
-			const review = await Review.findById(input.id)
-				.populate('user', 'name email')
-				.lean();
+			const review = await Review.findById(input.id).lean() as any;
 			
 			if (!review) {
 				throw new Error("Review not found");
+			}
+			
+			// Manually populate user data
+			try {
+				const userId = review.user.toString();
+				const user = await User.findOne({ _id: userId }).select('name email').lean();
+				review.user = user || { name: 'Unknown User', email: '' };
+			} catch (error) {
+				console.error('Error populating user for review:', review._id, error);
+				review.user = { name: 'Unknown User', email: '' };
 			}
 			
 			return review;
