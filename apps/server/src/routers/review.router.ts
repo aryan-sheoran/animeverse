@@ -33,14 +33,31 @@ export const reviewRouter = {
 				
 				console.log('✅ Found reviews for animeId', input.animeId, ':', reviews.length);
 				
-				// Manually populate user data by converting ObjectId to string
+				// Manually populate user data
 				const reviewsWithUsers = await Promise.all(
 					reviews.map(async (review: any) => {
 						try {
-							// Convert ObjectId to string for user lookup
-							// The user field in review is stored as ObjectId, but User._id is a string
-							const userId = review.user.toString();
-							const user = await User.findOne({ _id: userId }).select('name email').lean();
+							// Handle both ObjectId and String user IDs
+							// For old reviews: user is ObjectId, for new reviews: user is String
+							let userId = review.user;
+							
+							// If it's an ObjectId, convert to string
+							if (userId && typeof userId === 'object' && userId.toString) {
+								userId = userId.toString();
+							}
+							
+							console.log('👤 Looking up user with ID:', userId, 'Type:', typeof userId);
+							
+							// Try to find user by their string _id
+							const user = await User.findOne({ _id: userId }).select('name email').lean() as any;
+							console.log('👤 Found user:', user ? (user as any).name : 'Not found');
+							
+							// If not found, let's check what users actually exist (only once)
+							if (!user && reviews.indexOf(review) === 0) {
+								const sampleUsers = await User.find({}).limit(3).select('_id name').lean();
+								console.log('👥 Sample users in database:', sampleUsers.map((u: any) => ({ _id: u._id, name: u.name })));
+								console.log('👥 Trying to match userId:', userId, 'Length:', userId ? userId.length : 0);
+							}
 							
 							return {
 								...review,
@@ -74,9 +91,8 @@ export const reviewRouter = {
 		}))
 		.handler(async ({ input, context }) => {
 			const userId = context.session?.user?.id;
-			const userObjectId = new mongoose.Types.ObjectId(userId);
 			
-			const reviews = await Review.find({ user: userObjectId })
+			const reviews = await Review.find({ user: userId })
 				.sort({ createdAt: -1 })
 				.limit(input.limit)
 				.skip(input.skip)
@@ -103,7 +119,12 @@ export const reviewRouter = {
 			
 			// Manually populate user data
 			try {
-				const userId = review.user.toString();
+				// Handle both ObjectId and String user IDs
+				let userId = review.user;
+				if (userId && typeof userId === 'object' && userId.toString) {
+					userId = userId.toString();
+				}
+				
 				const user = await User.findOne({ _id: userId }).select('name email').lean();
 				review.user = user || { name: 'Unknown User', email: '' };
 			} catch (error) {
@@ -129,13 +150,10 @@ export const reviewRouter = {
 		.handler(async ({ input, context }) => {
 			const userId = context.session?.user?.id;
 			
-			// Convert string user ID to ObjectId
-			const userObjectId = new mongoose.Types.ObjectId(userId);
-			
 			// Check for duplicate review if episode is specified
 			if (input.episodeNumber !== undefined) {
 				const existingReview = await Review.findOne({
-					user: userObjectId,
+					user: userId,
 					animeId: input.animeId,
 					seasonNumber: input.seasonNumber,
 					episodeNumber: input.episodeNumber,
@@ -148,7 +166,7 @@ export const reviewRouter = {
 			
 			const review = await Review.create({
 				...input,
-				user: userObjectId,
+				user: userId,
 			});
 			
 			return review;
@@ -171,10 +189,9 @@ export const reviewRouter = {
 			
 			const { id, ...updateData } = input;
 			const userId = context.session?.user?.id;
-			const userObjectId = new mongoose.Types.ObjectId(userId);
 			
 			const review = await Review.findOneAndUpdate(
-				{ _id: id, user: userObjectId },
+				{ _id: id, user: userId },
 				updateData,
 				{ new: true, runValidators: true }
 			);
@@ -197,11 +214,10 @@ export const reviewRouter = {
 			}
 			
 			const userId = context.session?.user?.id;
-			const userObjectId = new mongoose.Types.ObjectId(userId);
 			
 			const review = await Review.findOneAndDelete({
 				_id: input.id,
-				user: userObjectId,
+				user: userId,
 			});
 			
 			if (!review) {
