@@ -12,11 +12,7 @@ export const auth = betterAuth<BetterAuthOptions>({
 	plugins: [username()],
 	user: {
 		additionalFields: {
-			username: {
-				type: "string",
-				required: false,
-				input: true,
-			},
+			// username field is now provided by the username() plugin - don't duplicate it here
 			bio: {
 				type: "string",
 				required: false,
