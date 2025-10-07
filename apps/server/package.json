@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "seed": "tsx src/scripts/seed.ts"
+    "seed": "tsx src/scripts/seed.ts",
+    "migrate:username": "tsx src/scripts/migrate-username.ts"
   },
   "dependencies": {
     "@orpc/client": "^1.9.2",
