@@ -37,7 +37,8 @@ export default function SignupPage() {
       const result = await authClient.signUp.email({
         email,
         password,
-        name: username,
+        username,
+        name: username, // Also set name for backward compatibility
       });
 
       if (result.error) {

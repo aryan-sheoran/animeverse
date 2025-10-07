@@ -1,5 +1,5 @@
 import { createAuthClient } from "better-auth/react";
-import { inferAdditionalFields } from "better-auth/client/plugins";
+import { inferAdditionalFields, usernameClient } from "better-auth/client/plugins";
 
 // Import auth type from server (this is type-only import)
 import type { auth } from "../../../server/src/lib/auth";
@@ -8,6 +8,7 @@ export const authClient = createAuthClient({
 	baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
 	plugins: [
 		inferAdditionalFields<typeof auth>(),
+		usernameClient(),
 	],
 });
 

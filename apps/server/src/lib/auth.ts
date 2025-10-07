@@ -1,5 +1,6 @@
 import { betterAuth, type BetterAuthOptions } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
+import { username } from "better-auth/plugins";
 import { client } from "../db";
 
 export const auth = betterAuth<BetterAuthOptions>({
@@ -8,6 +9,7 @@ export const auth = betterAuth<BetterAuthOptions>({
 	emailAndPassword: {
 		enabled: true,
 	},
+	plugins: [username()],
 	user: {
 		additionalFields: {
 			username: {

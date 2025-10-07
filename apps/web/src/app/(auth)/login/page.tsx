@@ -22,12 +22,12 @@ export default function LoginPage() {
     setIsLoading(true);
 
     const formData = new FormData(e.currentTarget);
-    const email = formData.get('email') as string;
+    const username = formData.get('username') as string;
     const password = formData.get('password') as string;
 
     try {
-      const result = await authClient.signIn.email({
-        email,
+      const result = await authClient.signIn.username({
+        username,
         password,
       });
 
@@ -76,9 +76,9 @@ export default function LoginPage() {
             <form ref={formRef} className={styles.form} onSubmit={handleLogin}>
               <div className={styles.inputBox}>
                 <input 
-                  type="email" 
-                  name="email" 
-                  placeholder="Email Address" 
+                  type="text" 
+                  name="username" 
+                  placeholder="Username" 
                   required 
                   className={styles.input}
                   disabled={isLoading}
