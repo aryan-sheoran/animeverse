@@ -102,7 +102,9 @@ export default function LoginPage() {
                 ></i>
               </div>
               <div className={styles.forgotLink}>
-                <a href="#">Forgot Password?</a>
+                <Link href={"/forgot-password" as any} style={{ color: 'inherit', textDecoration: 'inherit' }}>
+                  Forgot Password?
+                </Link>
               </div>
               {error && (
                 <div className={styles.errorMessage} style={{ display: 'block' }}>

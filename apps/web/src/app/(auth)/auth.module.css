@@ -464,7 +464,7 @@
   margin: 10px 0;
   border-radius: 4px;
   font-size: 0.9rem;
-  display: none;
+  display: block;
 }
 
 @media (max-width: 768px) {
@@ -480,6 +480,73 @@
     padding: 6px;
     margin: 6px 0;
     font-size: 0.8rem;
+  }
+}
+
+.successMessage {
+  background-color: rgba(87, 255, 87, 0.2);
+  border-left: 4px solid #57ff57;
+  color: #fff;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .successMessage {
+    padding: 8px;
+    margin: 8px 0;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .successMessage {
+    padding: 6px;
+    margin: 6px 0;
+    font-size: 0.8rem;
+  }
+}
+
+.register {
+  margin-top: 20px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+}
+
+.register p {
+  margin: 0;
+}
+
+.register a {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.register a:hover {
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.register span {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .register {
+    margin-top: 18px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .register {
+    margin-top: 15px;
+    font-size: 12px;
   }
 }
 
