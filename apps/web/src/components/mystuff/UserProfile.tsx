@@ -29,12 +29,6 @@ const UserProfile = () => {
     return user?.name || user?.email || 'User';
   };
 
-  const getUserBadge = () => {
-    if (isLoading) return 'Loading...';
-    if (!user) return 'Guest';
-    return (user as any)?.isPremium ? 'Premium User' : 'Standard User';
-  };
-
   const getUserLocation = () => {
     if (isLoading) return 'Loading...';
     if (!user) return 'Not specified';
@@ -70,7 +64,6 @@ const UserProfile = () => {
               {getUserInitials()}
             </div>
             <div className={styles.userName}>{getUserName()}</div>
-            <div className={styles.userBadge}>{getUserBadge()}</div>
             <button className={styles.editProfileBtn} onClick={handleEditProfile}>
               <i>✏️</i> Edit Profile
             </button>

@@ -101,11 +101,6 @@ export default function LoginPage() {
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 ></i>
               </div>
-              <div className={styles.forgotLink}>
-                <Link href={"/forgot-password" as any} style={{ color: 'inherit', textDecoration: 'inherit' }}>
-                  Forgot Password?
-                </Link>
-              </div>
               {error && (
                 <div className={styles.errorMessage} style={{ display: 'block' }}>
                   {error}
