@@ -128,7 +128,7 @@ export default function SignupPage() {
                   <input 
                     type="text" 
                     name="username" 
-                    placeholder="Your Name" 
+                    placeholder="Your Username" 
                     required 
                     className={styles.input}
                     disabled={isLoading}

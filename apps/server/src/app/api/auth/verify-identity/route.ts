@@ -16,10 +16,13 @@ export async function POST(request: NextRequest) {
 		// Get the users collection
 		const usersCollection = client.collection("user");
 
-		// Find user with matching email and username
+		// Find user with matching email and username (check both username and name fields)
 		const user = await usersCollection.findOne({
 			email: email.toLowerCase(),
-			name: username,
+			$or: [
+				{ username: username },
+				{ name: username }
+			]
 		});
 
 		if (!user) {
