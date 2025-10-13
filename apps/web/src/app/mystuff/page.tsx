@@ -6,18 +6,9 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import UserProfile from '@/components/mystuff/UserProfile';
 import MyShowsSection from '@/components/mystuff/MyShowsSection';
 import ReviewsSection from '@/components/mystuff/ReviewsSection';
-import BlogSection from '@/components/mystuff/BlogSection';
 import { client } from '@/utils/orpc';
 import styles from './mystuff.module.css';
 import { useAuth } from '@/lib/use-auth';
-
-interface BlogPost {
-  _id: string;
-  title: string;
-  content: string;
-  likeCount: number;
-  createdAt: string;
-}
 
 interface Review {
   _id: string;
@@ -28,7 +19,6 @@ interface Review {
 const MyStuff = () => {
   const router = useRouter();
   const { user, isLoading, isAuthenticated } = useAuth();
-  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
 
   // Effect to redirect if not authenticated
@@ -38,18 +28,6 @@ const MyStuff = () => {
       router.push('/login');
     }
   }, [isLoading, isAuthenticated, router]);
-
-  const fetchBlogPosts = useCallback(async () => {
-    if (isAuthenticated) {
-      try {
-        // Use RPC API
-        const data = await client.blogs.getMyBlogs({});
-        setBlogPosts(data as any);
-      } catch (error) {
-        console.error('Failed to fetch blog posts:', error);
-      }
-    }
-  }, [isAuthenticated]);
 
   const fetchReviews = useCallback(async () => {
     if (isAuthenticated) {
@@ -64,9 +42,8 @@ const MyStuff = () => {
   }, [isAuthenticated]);
 
   useEffect(() => {
-    fetchBlogPosts();
     fetchReviews();
-  }, [fetchBlogPosts, fetchReviews]);
+  }, [fetchReviews]);
 
   if (isLoading) {
     return (
