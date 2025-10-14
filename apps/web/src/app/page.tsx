@@ -498,12 +498,12 @@ export default function Home() {
               <p className={styles.featureDescription}>Meet like-minded anime fans, join watch parties, and build lasting friendships.</p>
             </div>
             <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>�</div>
+              <div className={styles.featureIcon}>📊</div>
               <h3 className={styles.featureTitle}>Track Your Reviews</h3>
               <p className={styles.featureDescription}>Keep track of all your anime reviews, ratings, and watching progress in one organized place.</p>
             </div>
             <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>�</div>
+              <div className={styles.featureIcon}>💬</div>
               <h3 className={styles.featureTitle}>Join Discussions</h3>
               <p className={styles.featureDescription}>Engage in meaningful conversations about your favorite anime shows and discover new perspectives.</p>
             </div>
