@@ -4,7 +4,9 @@ const { Schema, model } = mongoose;
 
 const userSchema = new Schema(
 	{
-		_id: { type: String },
+		// Better Auth actually stores ObjectIds, not Strings (confirmed via debug endpoint)
+		// Leaving this flexible - MongoDB will handle both
+		_id: { type: Schema.Types.Mixed },
 		name: { type: String, required: true },
 		email: { type: String, required: true, unique: true },
 		emailVerified: { type: Boolean, required: true },
@@ -17,24 +19,24 @@ const userSchema = new Schema(
 
 const sessionSchema = new Schema(
 	{
-		_id: { type: String },
+		_id: { type: Schema.Types.Mixed },
 		expiresAt: { type: Date, required: true },
 		token: { type: String, required: true, unique: true },
 		createdAt: { type: Date, required: true },
 		updatedAt: { type: Date, required: true },
 		ipAddress: { type: String },
 		userAgent: { type: String },
-		userId: { type: String, ref: "User", required: true },
+		userId: { type: Schema.Types.Mixed, ref: "User", required: true },
 	},
 	{ collection: "session" },
 );
 
 const accountSchema = new Schema(
 	{
-		_id: { type: String },
+		_id: { type: Schema.Types.Mixed },
 		accountId: { type: String, required: true },
 		providerId: { type: String, required: true },
-		userId: { type: String, ref: "User", required: true },
+		userId: { type: Schema.Types.Mixed, ref: "User", required: true },
 		accessToken: { type: String },
 		refreshToken: { type: String },
 		idToken: { type: String },
@@ -50,7 +52,7 @@ const accountSchema = new Schema(
 
 const verificationSchema = new Schema(
 	{
-		_id: { type: String },
+		_id: { type: Schema.Types.Mixed },
 		identifier: { type: String, required: true },
 		value: { type: String, required: true },
 		expiresAt: { type: Date, required: true },

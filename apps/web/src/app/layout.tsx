@@ -29,6 +29,11 @@ const inter = Inter({
 export const metadata: Metadata = {
 	title: "animeverse",
 	description: "animeverse",
+	icons: {
+		icon: "/favicon/logo.svg",
+		shortcut: "/favicon/logo.svg",
+		apple: "/favicon/logo.svg",
+	},
 };
 
 export default function RootLayout({

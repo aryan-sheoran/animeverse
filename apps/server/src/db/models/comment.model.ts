@@ -4,7 +4,7 @@ const { Schema, model } = mongoose;
 
 const commentSchema = new Schema(
 	{
-		userId: { type: String, ref: 'User', required: true, index: true },
+		userId: { type: Schema.Types.Mixed, ref: 'User', required: true, index: true },
 		targetType: { type: String, enum: ['review'], required: true },
 		targetId: { type: Schema.Types.ObjectId, required: true, index: true },
 		content: { type: String, required: true },

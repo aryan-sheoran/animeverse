@@ -4,7 +4,7 @@ const { Schema, model } = mongoose;
 
 const userShowSchema = new Schema(
 	{
-		userId: { type: String, ref: 'User', required: true, index: true },
+		userId: { type: Schema.Types.Mixed, ref: 'User', required: true, index: true },
 		showId: { type: Schema.Types.ObjectId, ref: 'Show', required: true, index: true },
 		isFavorite: { type: Boolean, default: false },
 		currentEpisode: { type: Number, default: 0 },

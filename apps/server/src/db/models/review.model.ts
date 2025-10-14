@@ -5,10 +5,35 @@ const { Schema, model } = mongoose;
 const reviewSchema = new Schema(
 	{
 		user: {
-			type: String,
+			type: Schema.Types.Mixed, // Support both String and ObjectId (Better Auth uses ObjectId)
 			ref: 'User',
 			required: true,
-			index: true
+			index: true,
+			// Normalize the user ID - convert strings to ObjectId if valid
+			set: function(v: any) {
+				if (!v) return v;
+				
+				// If it's already an ObjectId, return as is
+				if (v._bsontype === 'ObjectId' || v instanceof mongoose.Types.ObjectId) {
+					return v;
+				}
+				
+				// If it's a string, try to convert to ObjectId
+				const stringValue = String(v).trim();
+				
+				// If it looks like an ObjectId (24 hex chars), convert it
+				if (mongoose.Types.ObjectId.isValid(stringValue)) {
+					try {
+						return new mongoose.Types.ObjectId(stringValue);
+					} catch (err) {
+						// If conversion fails, return the trimmed string
+						return stringValue;
+					}
+				}
+				
+				// Otherwise return the trimmed string
+				return stringValue;
+			}
 		},
 		animeId: { // ID from the external API (e.g., Jikan)
 			type: String,

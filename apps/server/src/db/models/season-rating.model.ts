@@ -5,7 +5,7 @@ const { Schema, model } = mongoose;
 const seasonRatingSchema = new Schema(
 	{
 		user: {
-			type: String,
+			type: Schema.Types.Mixed,
 			ref: 'User',
 			required: true,
 			index: true
