@@ -144,7 +144,7 @@
 }
 
 .loadingLogo {
-  font-size: clamp(2.5rem, 8vw, 5rem);
+  font-size: clamp(2rem, 6vw, 4rem);
   font-weight: 800;
   letter-spacing: 2px;
   position: relative;
@@ -160,7 +160,7 @@
 
 @media (max-width: 768px) {
   .loadingLogo {
-    font-size: clamp(2rem, 10vw, 4rem);
+    font-size: clamp(1.8rem, 8vw, 3.2rem);
     letter-spacing: 1px;
     -webkit-text-stroke: 0.5px rgba(255, 255, 255, 0.1);
   }
@@ -168,7 +168,7 @@
 
 @media (max-width: 480px) {
   .loadingLogo {
-    font-size: clamp(2rem, 15vw, 3.5rem);
+    font-size: clamp(1.6rem, 10vw, 2.8rem);
     letter-spacing: 0.5px;
     -webkit-text-stroke: 0;
     font-weight: 900;
@@ -642,11 +642,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 250px;
 }
 
 .sectionImage img {
   width: 100%;
   max-width: 320px;
+  min-width: 200px;
   border-radius: 22px;
   box-shadow: var(--glass-shadow-strong);
   background: var(--glass-bg);
@@ -654,6 +656,19 @@
   -webkit-backdrop-filter: var(--glass-blur-light);
   object-fit: cover;
   aspect-ratio: 1/1;
+  display: block;
+}
+
+@media (max-width: 900px) {
+  .sectionImage {
+    width: 100%;
+    min-height: 200px;
+  }
+
+  .sectionImage img {
+    max-width: 280px;
+    min-width: 180px;
+  }
 }
 
 .sectionContent {
@@ -760,8 +775,12 @@
   .authDescription {
     font-size: 1rem;
   }
+  .sectionImage {
+    min-height: 180px;
+  }
   .sectionImage img {
-    max-width: 200px;
+    max-width: 240px;
+    min-width: 200px;
     border-radius: 15px;
   }
   .actionBtn {
@@ -805,8 +824,12 @@
     padding: 1rem 0.8rem;
     margin: 0 10px;
   }
+  .sectionImage {
+    min-height: 160px;
+  }
   .sectionImage img {
-    max-width: 150px;
+    max-width: 220px;
+    min-width: 180px;
   }
 }
 

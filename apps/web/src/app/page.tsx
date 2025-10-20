@@ -516,11 +516,10 @@ export default function Home() {
         <div className={`${styles.authContainer} ${styles.reverse}`}>
           <div className={styles.sectionImage}>
             <img 
-              src="/assets/test images/backiee-254632-landscape.jpg" 
+              src="/assets/Home-image/AOT.jpg" 
               alt="Anime Sign Up"
               onError={(e) => {
-                console.warn('Failed to load backiee-254632-landscape.jpg, using fallback');
-                e.currentTarget.src = '/assets/intro-img/lat2.jpg';
+                e.currentTarget.src = '/assets/Home-image/AOT.jpg';
               }}
             />
           </div>
